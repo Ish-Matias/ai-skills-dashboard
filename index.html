@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Skills Displacement Dashboard 2026</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:#F8FAFC;color:#0F172A;min-height:100vh;padding:24px 20px}
+  h1{font-size:24px;font-weight:800;line-height:1.2}
+  h2{font-size:18px;font-weight:700}
+  h3{font-size:15px;font-weight:700}
+  a{color:#1E40AF}
+  button{font-family:inherit;cursor:pointer}
+
+  .container{max-width:980px;margin:0 auto}
+
+  /* HEADER */
+  .header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+  .header-meta{font-size:13px;color:#64748B;margin-top:4px}
+  .source-chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .chip{font-size:10px;padding:3px 9px;border:1px solid #E2E8F0;border-radius:99px;color:#64748B;background:#fff}
+
+  /* STATS GRID */
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+  .stat-card{display:block;text-decoration:none;border-radius:12px;padding:14px 16px;border:1px solid #E2E8F0;transition:opacity .15s}
+  .stat-card:hover{opacity:.85}
+  .stat-card .val{font-size:24px;font-weight:800}
+  .stat-card .lbl{font-size:12px;line-height:1.4;margin-top:2px}
+  .stat-card .src{font-size:10px;opacity:.65;margin-top:6px}
+  .stat-card .tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;float:right;margin-left:8px}
+  .tag-new{background:#ECFEFF;color:#164E63;border:1px solid rgba(14,116,144,.3)}
+  .tag-old{background:#F1F5F9;color:#64748B;border:1px solid #E2E8F0}
+
+  /* ALERT BANNER */
+  .alert-banner{background:#ECFEFF;border:1px solid rgba(14,116,144,.35);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start}
+  .alert-banner .icon{font-size:22px;flex-shrink:0}
+  .alert-banner .title{font-size:13px;font-weight:700;color:#164E63;margin-bottom:4px}
+  .alert-banner .body{font-size:12px;color:#164E63;line-height:1.7}
+
+  /* TABS */
+  .tabs{display:flex;gap:4px;background:#fff;border:1px solid #E2E8F0;border-radius:99px;padding:4px;margin-bottom:24px;width:fit-content;flex-wrap:wrap}
+  .tab-btn{padding:8px 18px;border-radius:99px;border:none;font-size:13px;background:transparent;color:#64748B;font-family:inherit;transition:all .15s}
+  .tab-btn.active{background:#0F172A;color:#fff;font-weight:700}
+
+  /* TWO-COLUMN GRID */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+
+  /* CARD */
+  .card{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:1.25rem}
+  .card-title{font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+
+  /* RISK BARS */
+  .bu-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .bu-name{font-size:12px;width:140px;flex-shrink:0}
+  .bu-name.featured{font-weight:700;color:#7C3AED}
+  .bar-bg{flex:1;background:#F1F5F9;border-radius:4px;height:8px;overflow:hidden;display:flex}
+  .bar-seg{height:100%}
+  .bar-pct{font-size:11px;color:#64748B;width:38px;text-align:right}
+  .legend{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#64748B}
+  .leg-dot{width:10px;height:10px;border-radius:2px;display:inline-block}
+
+  /* BU CARDS GRID */
+  .bu-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .bu-card{border-radius:12px;padding:12px 14px;cursor:pointer;border:1.5px solid #E2E8F0;transition:border-color .15s;background:#fff}
+  .bu-card:hover{border-color:#94A3B8}
+  .bu-card.active{border-color:#1D4ED8}
+  .bu-card.featured-card{background:#F5F3FF;border-color:#C4B5FD}
+  .bu-card.featured-card.active{border-color:#7C3AED}
+  .bu-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .bu-card-name{font-size:12px;font-weight:600}
+  .bu-card-name.featured{color:#7C3AED}
+  .bu-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+  .risk-label{font-size:11px}
+  .badge-2026{font-size:9px;background:#ECFEFF;color:#164E63;border-radius:99px;padding:1px 6px;font-weight:700}
+
+  /* EXPANDED PANEL */
+  .expanded-panel{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:1.25rem;margin-bottom:20px}
+  .expanded-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .close-btn{background:none;border:none;font-size:22px;color:#64748B;line-height:1}
+  .source-note{font-size:11px;color:#64748B;margin-bottom:10px;font-style:italic}
+  .update-26{background:#ECFEFF;border:1px solid rgba(14,116,144,.3);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:#164E63}
+  .update-26 strong{display:block;margin-bottom:3px}
+  .reskill-row{margin-top:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .reskill-label{font-size:11px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em}
+  .reskill-chip{font-size:12px;background:#EFF6FF;color:#1E40AF;border-radius:99px;padding:2px 10px}
+
+  /* SKILL TABLE */
+  .skill-table{width:100%;border-collapse:collapse;font-size:13px}
+  .skill-table th{text-align:left;padding:6px 12px 10px 0;color:#64748B;font-weight:500;font-size:11px;border-bottom:1px solid #E2E8F0}
+  .skill-table td{padding:9px 12px 9px 0;border-bottom:1px solid #E2E8F0;vertical-align:top}
+  .skill-table td.ai-col{color:#64748B}
+  .skill-table td.timeline-col{color:#64748B;font-size:12px;white-space:nowrap}
+  .skill-table tr:last-child td{border-bottom:none}
+
+  /* BADGES */
+  .badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+  .badge-high{background:#FEE2E2;color:#991B1B}
+  .badge-medium{background:#FEF3C7;color:#92400E}
+  .badge-low{background:#DCFCE7;color:#166534}
+
+  /* TA DEEP DIVE */
+  .ta-panel{border:2px solid #7C3AED;border-radius:16px;padding:1.5rem;background:#F5F3FF;margin-bottom:1.5rem}
+  .ta-featured-label{background:#7C3AED;color:#fff;border-radius:8px;padding:4px 12px;font-size:11px;font-weight:700;letter-spacing:.08em;display:inline-block;margin-right:8px}
+  .ta-title{font-size:20px;font-weight:700;color:#4C1D95;margin:12px 0 4px}
+  .ta-subtitle{font-size:13px;color:#64748B;margin-bottom:16px;line-height:1.6}
+  .ta-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+  .ta-metric{border-radius:10px;padding:12px 14px}
+  .ta-metric .val{font-size:28px;font-weight:800}
+  .ta-metric .lbl{font-size:11px;line-height:1.4;margin-top:2px}
+  .ta-skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  .ta-skill-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+  .ta-skill-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #FEE2E2}
+  .ta-skill-row.med{border-bottom-color:#FEF3C7}
+  .ta-skill-row.low{border-bottom-color:#DCFCE7}
+  .ta-skill-row:last-child{border-bottom:none}
+  .ta-skill-name{font-size:13px;font-weight:500}
+  .ta-skill-ai{font-size:11px;color:#64748B;margin-top:2px}
+  .ta-timeline{font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+  .ta-reskill-box{background:#fff;border:1px solid #DDD6FE;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  .ta-reskill-title{font-size:12px;font-weight:700;color:#4C1D95;margin-bottom:6px}
+  .ta-reskill-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .ta-reskill-chip{background:#F5F3FF;color:#4C1D95;border:1px solid #C4B5FD;border-radius:99px;padding:3px 12px;font-size:12px}
+  .ta-note{background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:12px 14px;font-size:12px;color:#92400E;line-height:1.6}
+  .ta-split-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ta-role-row{padding:10px 0;border-bottom:1px solid #E2E8F0}
+  .ta-role-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .ta-role-name{font-weight:600;font-size:13px}
+  .ta-role-desc{font-size:12px;color:#64748B}
+  .ta-stat-row{display:flex;gap:12px;padding:7px 0;border-bottom:1px solid #E2E8F0;align-items:flex-start}
+  .ta-stat-val{font-size:17px;font-weight:800;min-width:52px;flex-shrink:0}
+  .ta-stat-desc{font-size:12px;color:#0F172A}
+  .ta-stat-src{font-size:10px;color:#64748B;margin-top:2px;display:flex;align-items:center;gap:5px}
+
+  /* SKILLS MAPPING */
+  .filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+  .filter-btn{padding:6px 16px;border-radius:99px;font-size:12px;font-family:inherit;border:1px solid #E2E8F0;background:#fff;color:#64748B}
+  .filter-btn.active{border-color:#1D4ED8;background:#EFF6FF;color:#1E40AF;font-weight:700}
+  .mapping-table-wrap{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden}
+  .mapping-table{width:100%;border-collapse:collapse;font-size:13px}
+  .mapping-table th{text-align:left;padding:10px 14px;color:#64748B;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;background:#F8FAFC;border-bottom:1px solid #E2E8F0}
+  .mapping-table td{padding:9px 14px;border-bottom:1px solid #E2E8F0;vertical-align:top}
+  .mapping-table tr:last-child td{border-bottom:none}
+  .mapping-table tr.ta-row{background:#F5F3FF}
+  .mapping-table td.bu-col{font-size:12px;white-space:nowrap}
+  .mapping-table td.bu-col.featured{color:#7C3AED;font-weight:600}
+  .mapping-table td.ai-col-m{color:#64748B}
+  .mapping-table td.tl-col{color:#64748B;font-size:12px}
+
+  /* REFS */
+  .transparency-note{background:#FEF3C7;border:1px solid #FDE68A;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#92400E}
+  .ref-toggle{display:flex;gap:8px;margin-bottom:16px}
+  .ref-toggle-btn{padding:6px 16px;border-radius:99px;font-size:12px;font-family:inherit;border:1px solid #E2E8F0;background:#fff;color:#64748B}
+  .ref-toggle-btn.active{border-color:#0E7490;background:#ECFEFF;color:#164E63;font-weight:700}
+  .refs-list{display:flex;flex-direction:column;gap:10px}
+  .ref-card{background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:1.25rem}
+  .ref-card.new26{border-color:rgba(14,116,144,.35)}
+  .ref-card-inner{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+  .ref-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+  .ref-org{color:#fff;border-radius:6px;padding:2px 10px;font-size:11px;font-weight:700}
+  .ref-year{font-size:12px;color:#64748B}
+  .ref-title{font-size:13px;font-weight:600;color:#0F172A}
+  .ref-finding{font-size:13px;color:#64748B;margin:0;line-height:1.6}
+  .ref-links{display:flex;gap:8px;flex-shrink:0}
+  .ref-link{font-size:12px;color:#1E40AF;background:#EFF6FF;padding:5px 14px;border-radius:99px;text-decoration:none;border:1px solid #BFDBFE}
+  .ref-link-pdf{font-size:12px;color:#64748B;background:#F8FAFC;padding:5px 14px;border-radius:99px;text-decoration:none;border:1px solid #E2E8F0}
+
+  /* FOOTER */
+  .footer{margin-top:28px;padding:12px 0;border-top:1px solid #E2E8F0;font-size:11px;color:#64748B;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px}
+
+  /* HIDDEN */
+  .hidden{display:none}
+
+  @media(max-width:640px){
+    .stats-grid{grid-template-columns:1fr 1fr}
+    .grid-2{grid-template-columns:1fr}
+    .bu-cards{grid-template-columns:1fr}
+    .ta-metrics{grid-template-columns:1fr 1fr}
+    .ta-skills-grid{grid-template-columns:1fr}
+    .ta-split-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:420px){
+    .stats-grid{grid-template-columns:1fr}
+    .ta-metrics{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>AI Skills Displacement Dashboard</h1>
+      <p class="header-meta">Cited research · 9 business units · TA deep-dive · US / EMEA / APAC · Updated April 2026 · <span id="active-region-label" style="font-weight:700;color:#0E7490">Viewing: Global / US</span></p>
+    </div>
+    <div class="source-chips">
+      <span class="chip tag-new" style="background:#ECFEFF;color:#164E63;border-color:rgba(14,116,144,.4)">NEW 2026</span>
+      <span class="chip">WEF 2025</span><span class="chip">McKinsey</span><span class="chip">Goldman Sachs</span>
+      <span class="chip">BCG 2026</span><span class="chip">PwC</span><span class="chip">Gartner</span><span class="chip">Stanford 2026</span>
+    </div>
+  </div>
+
+  <!-- REGION SELECTOR -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <span style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em">Region:</span>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button onclick="setRegion('us')" id="rgn-us" class="rgn-btn active-rgn" style="padding:6px 16px;border-radius:99px;font-size:12px;font-weight:700;border:1.5px solid #0F172A;background:#0F172A;color:#fff;font-family:inherit;cursor:pointer">🇺🇸 US</button>
+      <button onclick="setRegion('emea')" id="rgn-emea" class="rgn-btn" style="padding:6px 16px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #E2E8F0;background:#fff;color:#64748B;font-family:inherit;cursor:pointer">🌍 EMEA</button>
+      <button onclick="setRegion('apac')" id="rgn-apac" class="rgn-btn" style="padding:6px 16px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid #E2E8F0;background:#fff;color:#64748B;font-family:inherit;cursor:pointer">🌏 APAC</button>
+    </div>
+    <span id="region-source-tag" style="font-size:11px;background:#F1F5F9;color:#64748B;padding:3px 10px;border-radius:99px;border:1px solid #E2E8F0">Goldman Sachs · Stanford HAI · McKinsey · Brookings</span>
+  </div>
+
+  <!-- HEADLINE STATS -->
+  <div class="stats-grid" id="stats-grid-container">
+    <a class="stat-card" href="https://fortune.com/2026/04/06/ai-tech-displacement-effect-gen-z-16000-jobs-per-month/" target="_blank" style="background:#FEE2E2;border-color:rgba(153,27,27,.2)">
+      <span class="tag tag-new" style="background:#ECFEFF;color:#164E63;border-color:rgba(14,116,144,.4)">NEW 2026</span>
+      <div class="val" style="color:#991B1B">16,000</div>
+      <div class="lbl" style="color:#991B1B">US jobs lost per month (net)</div>
+      <div class="src" style="color:#991B1B">Goldman Sachs, April 2026</div>
+    </a>
+    <a class="stat-card" href="https://hai.stanford.edu/ai-index/2026-ai-index-report" target="_blank" style="background:#ECFEFF;border-color:rgba(14,116,144,.3)">
+      <span class="tag tag-new" style="background:#ECFEFF;color:#164E63;border-color:rgba(14,116,144,.4)">NEW 2026</span>
+      <div class="val" style="color:#164E63">20%</div>
+      <div class="lbl" style="color:#164E63">Drop in US software dev employment, ages 22–25</div>
+      <div class="src" style="color:#164E63">Stanford AI Index 2026</div>
+    </a>
+    <a class="stat-card" href="https://lightcast.io/resources/research/stanford-ai-index-2026" target="_blank" style="background:#FEF3C7;border-color:rgba(146,64,14,.2)">
+      <span class="tag tag-new" style="background:#ECFEFF;color:#164E63;border-color:rgba(14,116,144,.4)">NEW 2026</span>
+      <div class="val" style="color:#92400E">280%</div>
+      <div class="lbl" style="color:#92400E">Surge in 'Agentic AI' skill mentions in job postings</div>
+      <div class="src" style="color:#92400E">Lightcast / Stanford AI Index 2026</div>
+    </a>
+    <a class="stat-card" href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/" target="_blank" style="background:#EFF6FF">
+      <span class="tag tag-old">2025</span>
+      <div class="val" style="color:#1E40AF">39%</div>
+      <div class="lbl" style="color:#1E40AF">of existing skills outdated by 2030</div>
+      <div class="src" style="color:#1E40AF">WEF Future of Jobs 2025</div>
+    </a>
+    <a class="stat-card" href="https://www.mckinsey.com/mgi/our-research" target="_blank" style="background:#F1F5F9">
+      <span class="tag tag-old">2025</span>
+      <div class="val" style="color:#64748B">57%</div>
+      <div class="lbl" style="color:#64748B">of US work hours automatable today</div>
+      <div class="src" style="color:#64748B">McKinsey MGI, Nov 2025</div>
+    </a>
+    <a class="stat-card" href="https://www.pwc.com/gx/en/services/ai/ai-jobs-barometer.html" target="_blank" style="background:#DCFCE7">
+      <span class="tag tag-old">2025</span>
+      <div class="val" style="color:#166534">56%</div>
+      <div class="lbl" style="color:#166534">wage premium for workers with AI skills</div>
+      <div class="src" style="color:#166534">PwC AI Jobs Barometer 2025</div>
+    </a>
+  </div>
+
+  <!-- 2026 ALERT -->
+  <div class="alert-banner" id="alert-banner-content">
+    <div class="icon">📡</div>
+    <div>
+      <div class="title">2026 data integrated</div>
+      <div class="body">
+        <strong>Goldman Sachs (April 2026):</strong> AI erasing 16,000 US jobs/month net — substitution removes ~25,000, augmentation adds back ~9,000. Gen Z bearing the brunt. &nbsp;·&nbsp;
+        <strong>Stanford AI Index (April 13, 2026):</strong> US software dev employment (ages 22–25) down ~20%; agentic AI skill demand up 280%; a third of orgs expect workforce reductions in service ops and software engineering. &nbsp;·&nbsp;
+        <strong>SHRM 2026:</strong> AI use in HR/TA workflows hit 43% (up from 26% in 2024). &nbsp;·&nbsp;
+        <strong>Robert Half (April 2026):</strong> 29% of companies that laid off workers after AI implementation have since rehired ("AI boomerang").
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('overview',this)">Overview</button>
+    <button class="tab-btn" onclick="switchTab('ta',this)">TA Deep-Dive ★</button>
+    <button class="tab-btn" onclick="switchTab('evolution',this)">TA Role Evolution</button>
+    <button class="tab-btn" onclick="switchTab('mapping',this)">Skills Mapping</button>
+    <button class="tab-btn" onclick="switchTab('refs',this)">References</button>
+  </div>
+
+  <!-- ── OVERVIEW TAB ── -->
+  <div id="tab-overview">
+    <div class="grid-2">
+      <!-- Risk bars -->
+      <div class="card">
+        <div class="card-title">Automation exposure by business unit</div>
+        <div class="legend">
+          <span class="leg-item"><span class="leg-dot" style="background:#EF4444"></span>High</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#F59E0B"></span>Med</span>
+          <span class="leg-item"><span class="leg-dot" style="background:#22C55E"></span>Lower</span>
+        </div>
+        <div id="risk-bars"></div>
+        <p style="font-size:10px;color:#64748B;margin-top:10px;line-height:1.5">Sources: Goldman Sachs + McKinsey sector analysis; PwC AI Jobs Barometer 2025. % splits are directional — cited research gives industry-level aggregates.</p>
+      </div>
+      <!-- BU cards -->
+      <div>
+        <div class="card-title" style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">Click a unit to expand</div>
+        <div class="bu-cards" id="bu-cards"></div>
+      </div>
+    </div>
+    <!-- Expanded panel -->
+    <div id="expanded-panel" class="expanded-panel hidden"></div>
+  </div>
+
+  <!-- ── TA DEEP DIVE TAB ── -->
+  <div id="tab-ta" class="hidden">
+    <div class="ta-panel">
+      <div>
+        <span class="ta-featured-label">FEATURED: SOFTWARE COMPANY FOCUS</span>
+        <span class="tag tag-new" style="background:#ECFEFF;color:#164E63;border-color:rgba(14,116,144,.4)">NEW 2026 DATA UPDATED</span>
+      </div>
+      <div class="ta-title">Talent Acquisition — Tech / Software Company</div>
+      <p class="ta-subtitle">TA teams at software companies face a double disruption: AI is automating their own workflows <em>and</em> fundamentally changing the roles they hire for. Entry-level tech hiring at the top 15 firms fell 25% from 2023–2024 and continued into 2026 — directly compressing TA volume and reshaping recruiter priorities.</p>
+      <div class="update-26">
+        <strong>📡 2026 UPDATE</strong>
+        Gartner Oct 2025: 'AI has the potential to impact nearly every part of the recruiter role.' SHRM 2026: AI use in HR/TA hit 43%. Stanford AI Index 2026: entry-level tech hiring at top 15 firms fell 25% 2023–2024, continuing into 2026 — directly affecting TA pipeline and volume. Robert Half Apr 2026: 29% of companies that laid off workers after AI have since rehired them.
+      </div>
+      <div class="ta-metrics">
+        <div class="ta-metric" style="background:#FEE2E2"><div class="val" style="color:#991B1B">7</div><div class="lbl" style="color:#991B1B">Skills fully automated now</div></div>
+        <div class="ta-metric" style="background:#FEF3C7"><div class="val" style="color:#92400E">5</div><div class="lbl" style="color:#92400E">Skills partially automated (2–5 yrs)</div></div>
+        <div class="ta-metric" style="background:#DCFCE7"><div class="val" style="color:#166534">5</div><div class="lbl" style="color:#166534">Human-led &amp; resilient</div></div>
+      </div>
+      <div class="ta-skills-grid">
+        <div>
+          <div class="ta-skill-section-title" style="color:#991B1B">🔴 Automated now — AI replaces these</div>
+          <div class="ta-skill-row"><div><div class="ta-skill-name">Resume screening &amp; parsing</div><div class="ta-skill-ai">Eightfold AI, Beamery, LLMs</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+          <div class="ta-skill-row"><div><div class="ta-skill-name">Boolean string building</div><div class="ta-skill-ai">AI sourcing tools</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+          <div class="ta-skill-row"><div><div class="ta-skill-name">Interview scheduling &amp; coordination</div><div class="ta-skill-ai">GoodTime, Paradox, AI schedulers</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+          <div class="ta-skill-row"><div><div class="ta-skill-name">Job description writing</div><div class="ta-skill-ai">Generative AI (LinkedIn Hiring Assistant)</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+          <div class="ta-skill-row"><div><div class="ta-skill-name">Candidate outreach templating</div><div class="ta-skill-ai">AI personalised messaging</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+          <div class="ta-skill-row"><div><div class="ta-skill-name">ATS data entry &amp; admin</div><div class="ta-skill-ai">Agentic AI workflows</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+          <div class="ta-skill-row" style="border-bottom:none"><div><div class="ta-skill-name">Initial screening calls (volume roles)</div><div class="ta-skill-ai">AI voice/chat agents (Paradox, HireVue)</div></div><span class="ta-timeline" style="background:#FEE2E2;color:#991B1B">Now</span></div>
+        </div>
+        <div>
+          <div class="ta-skill-section-title" style="color:#92400E">🟡 Changing fast (2–5 yrs)</div>
+          <div class="ta-skill-row med"><div><div class="ta-skill-name">Talent pipeline reporting</div><div class="ta-skill-ai">AI analytics dashboards</div></div><span class="ta-timeline" style="background:#FEF3C7;color:#92400E">2–5 yrs</span></div>
+          <div class="ta-skill-row med"><div><div class="ta-skill-name">Compensation benchmarking</div><div class="ta-skill-ai">AI comp tools</div></div><span class="ta-timeline" style="background:#FEF3C7;color:#92400E">2–5 yrs</span></div>
+          <div class="ta-skill-row med"><div><div class="ta-skill-name">Passive candidate sourcing (entry-level)</div><div class="ta-skill-ai">AI sourcing agents</div></div><span class="ta-timeline" style="background:#FEF3C7;color:#92400E">2–5 yrs</span></div>
+          <div class="ta-skill-row med"><div><div class="ta-skill-name">Employer brand content creation</div><div class="ta-skill-ai">Generative AI</div></div><span class="ta-timeline" style="background:#FEF3C7;color:#92400E">2–5 yrs</span></div>
+          <div class="ta-skill-row med" style="border-bottom:none"><div><div class="ta-skill-name">Technical assessment co-ordination</div><div class="ta-skill-ai">AI assessment platforms</div></div><span class="ta-timeline" style="background:#FEF3C7;color:#92400E">2–5 yrs</span></div>
+          <div style="margin-top:16px">
+            <div class="ta-skill-section-title" style="color:#166534">🟢 Human-led — where TA value lives</div>
+            <div class="ta-skill-row low"><div><div class="ta-skill-name">Senior &amp; executive search</div><div class="ta-skill-ai">Human-led with AI assist</div></div><span class="ta-timeline" style="background:#DCFCE7;color:#166534">5+ yrs</span></div>
+            <div class="ta-skill-row low"><div><div class="ta-skill-name">Candidate relationship &amp; trust-building</div><div class="ta-skill-ai">Irreplaceable human skill</div></div><span class="ta-timeline" style="background:#DCFCE7;color:#166534">5+ yrs</span></div>
+            <div class="ta-skill-row low"><div><div class="ta-skill-name">Hiring manager consulting &amp; influence</div><div class="ta-skill-ai">Human-led</div></div><span class="ta-timeline" style="background:#DCFCE7;color:#166534">5+ yrs</span></div>
+            <div class="ta-skill-row low"><div><div class="ta-skill-name">Cultural fit &amp; values assessment</div><div class="ta-skill-ai">Human judgment required</div></div><span class="ta-timeline" style="background:#DCFCE7;color:#166534">5+ yrs</span></div>
+            <div class="ta-skill-row low" style="border-bottom:none"><div><div class="ta-skill-name">Offer negotiation &amp; closing</div><div class="ta-skill-ai">Human-led</div></div><span class="ta-timeline" style="background:#DCFCE7;color:#166534">5+ yrs</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ta-reskill-box">
+        <div class="ta-reskill-title">What tech recruiters must reskill toward:</div>
+        <div class="ta-reskill-chips">
+          <span class="ta-reskill-chip">AI tool orchestration</span>
+          <span class="ta-reskill-chip">Talent strategy consulting</span>
+          <span class="ta-reskill-chip">Technical literacy (LLMs, agents, dev workflows)</span>
+          <span class="ta-reskill-chip">DEI &amp; AI bias auditing</span>
+          <span class="ta-reskill-chip">Candidate experience design</span>
+        </div>
+      </div>
+      <div class="ta-note">
+        <strong>⚠️ Software company context:</strong> In a software company, TA teams must also deeply understand the roles they hire for — AI engineering, LLM pipelines, agentic workflows. As junior tech roles shrink (Stanford 2026: -20% for devs aged 22–25), recruiters are hiring for more senior, specialised profiles. The 'AI boomerang' trend (Robert Half, April 2026: 29% of companies rehire after AI layoffs) also shows that TA capacity planning is harder than ever.
+      </div>
+    </div>
+
+    <div class="ta-split-grid">
+      <div class="card">
+        <div class="card-title">The TA role is splitting in two</div>
+        <div class="ta-role-row">
+          <div class="ta-role-header"><span class="ta-role-name">AI-automated sourcer</span><span class="badge badge-high">High risk</span></div>
+          <div class="ta-role-desc">Handles volume: sources, screens, schedules, sends outreach. Largely agentic AI by 2027 (Gartner). SHRM 2026: AI now in 43% of TA workflows.</div>
+        </div>
+        <div class="ta-role-row" style="border-bottom:none">
+          <div class="ta-role-header"><span class="ta-role-name">Talent strategist &amp; advisor</span><span class="badge badge-low">Resilient</span></div>
+          <div class="ta-role-desc">Consults hiring managers, builds relationships, drives employer brand, closes senior talent. Irreplaceable.</div>
+        </div>
+        <p style="font-size:10px;color:#64748B;margin-top:10px">Sources: Gartner TA Trends 2026; Deloitte 2025; SHRM 2026</p>
+      </div>
+      <div class="card">
+        <div class="card-title">Key stats for TA leaders</div>
+        <div class="ta-stat-row"><span class="ta-stat-val" style="color:#0E7490">25%</span><div><div class="ta-stat-desc">drop in entry-level tech hiring at top 15 firms (2023–2024, continuing 2026)</div><div class="ta-stat-src"><span class="badge-2026">2026</span>Stanford AI Index 2026</div></div></div>
+        <div class="ta-stat-row"><span class="ta-stat-val" style="color:#0E7490">43%</span><div><div class="ta-stat-desc">of TA/HR teams now using AI in real workflows (up from 26% in 2024)</div><div class="ta-stat-src"><span class="badge-2026">2026</span>SHRM 2026</div></div></div>
+        <div class="ta-stat-row"><span class="ta-stat-val" style="color:#0E7490">280%</span><div><div class="ta-stat-desc">surge in 'Agentic AI' skill demand in job postings in one year</div><div class="ta-stat-src"><span class="badge-2026">2026</span>Lightcast / Stanford 2026</div></div></div>
+        <div class="ta-stat-row"><span class="ta-stat-val" style="color:#0E7490">29%</span><div><div class="ta-stat-desc">of companies rehired workers after AI layoffs ('AI boomerang')</div><div class="ta-stat-src"><span class="badge-2026">2026</span>Robert Half, April 2026</div></div></div>
+        <div class="ta-stat-row"><span class="ta-stat-val" style="color:#7C3AED">87%</span><div><div class="ta-stat-desc">of Fortune 500 already using AI in talent acquisition</div><div class="ta-stat-src">Insight Global 2025</div></div></div>
+        <div class="ta-stat-row"><span class="ta-stat-val" style="color:#7C3AED">40%</span><div><div class="ta-stat-desc">faster time-to-shortlist using AI screening tools</div><div class="ta-stat-src">Eightfold AI 2025</div></div></div>
+        <div class="ta-stat-row" style="border-bottom:none"><span class="ta-stat-val" style="color:#7C3AED">79%</span><div><div class="ta-stat-desc">of candidates want transparency on AI usage in hiring</div><div class="ta-stat-src">Josh Bersin 2025</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SKILLS MAPPING TAB ── -->
+  <div id="tab-mapping" class="hidden">
+    <div class="filter-row" id="filter-row"></div>
+    <div class="mapping-table-wrap">
+      <div style="overflow-x:auto">
+        <table class="mapping-table">
+          <thead><tr>
+            <th>Business Unit</th><th>Skill / Task displaced</th><th>AI replacement</th><th>Risk</th><th>Timeline</th>
+          </tr></thead>
+          <tbody id="mapping-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REFERENCES TAB ── -->
+  <div id="tab-refs" class="hidden">
+    <div class="transparency-note"><strong>Transparency:</strong> Sector-level risk rankings are consistent with cited sources. Exact % splits per BU are directional — research gives industry/occupation aggregates, not granular BU percentages. All headline stats come directly from the named reports.</div>
+    <div class="ref-toggle">
+      <button class="ref-toggle-btn active" onclick="toggleRefs(false,this)">All sources</button>
+      <button class="ref-toggle-btn" onclick="toggleRefs(true,this)">2026 sources only</button>
+    </div>
+    <div class="refs-list" id="refs-list"></div>
+  </div>
+
+  <!-- ── TA ROLE EVOLUTION TAB ── -->
+  <div id="tab-evolution" class="hidden">
+
+    <!-- TA MANAGER PROFILE CARD -->
+    <div style="border:2px solid #F59E0B;border-radius:14px;padding:1.25rem;background:#FFFBEB;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="width:44px;height:44px;border-radius:50%;background:#FEF3C7;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#92400E;flex-shrink:0;border:2px solid #FDE68A">TAM</div>
+        <div style="flex:1">
+          <div style="font-size:16px;font-weight:700;color:#78350F">TA Manager</div>
+          <div style="font-size:12px;color:#92400E">Evolving: from hiring manager to strategic workforce architect</div>
+        </div>
+        <span style="background:#FEF3C7;color:#92400E;border:1px solid #FDE68A;padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700">Strategic shift</span>
+      </div>
+
+      <!-- SUPERPOWERS -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px">
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #FED7AA">
+          <div style="font-size:13px;font-weight:600;color:#92400E;margin-bottom:3px">Anticipates talent needs</div>
+          <div style="font-size:11px;color:#92400E;line-height:1.5">Forecasts workforce gaps before they become business problems — AI can't replace this judgment</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #DDD6FE">
+          <div style="font-size:13px;font-weight:600;color:#7C3AED;margin-bottom:3px">Build vs bot decisions</div>
+          <div style="font-size:11px;color:#7C3AED;line-height:1.5">Advises leadership: hire a human, reskill internally, or deploy an AI agent for this function?</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #A5F3FC">
+          <div style="font-size:13px;font-weight:600;color:#164E63;margin-bottom:3px">Board-level voice</div>
+          <div style="font-size:11px;color:#0E7490;line-height:1.5">Represents talent strategy at exec level — not just headcount reporting or req management</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #BBF7D0">
+          <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:3px">Transformation leader</div>
+          <div style="font-size:11px;color:#166534;line-height:1.5">Guides the org through AI adoption in talent — the hardest and most valuable change mgmt role</div>
+        </div>
+      </div>
+
+      <!-- TRACK TOGGLE -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button id="tam-track-ic" onclick="setTAMTrack('ic')" style="padding:7px 18px;border-radius:99px;border:1.5px solid #F59E0B;background:#F59E0B;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">IC Track — Team Member view</button>
+        <button id="tam-track-mgr" onclick="setTAMTrack('mgr')" style="padding:7px 18px;border-radius:99px;border:1.5px solid #E2E8F0;background:transparent;color:#64748B;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Manager Track — Your Level</button>
+      </div>
+
+      <!-- IC TRACK -->
+      <div id="tam-track-ic-content">
+        <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">IC career evolution track — recruiter / coordinator path</div>
+        <div style="display:flex;align-items:flex-start;gap:6px;overflow-x:auto;padding-bottom:6px">
+          <div style="min-width:130px;flex:1;background:#F1F5F9;border-radius:8px;padding:10px 12px">
+            <div style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Start</div>
+            <div style="font-size:12px;font-weight:700;color:#0F172A;margin-bottom:4px">Recruiter / TA Coordinator</div>
+            <div style="font-size:10px;color:#64748B;line-height:1.5">Full-cycle hiring, scheduling, ATS management, req support</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:150px;flex:1;background:#FEF3C7;border-radius:8px;padding:10px 12px;border:1px solid #FDE68A">
+            <div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Evolving now</div>
+            <div style="font-size:12px;font-weight:700;color:#78350F;margin-bottom:4px">AI-augmented Recruiter</div>
+            <div style="font-size:10px;color:#92400E;line-height:1.5">AI handles admin; owns candidate relationships, HM consulting, skills-based hiring</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:150px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Next</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Talent Advisor</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">Strategic partner to leadership, workforce planning inputs, executive hiring</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:150px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Future</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Strategic Talent Partner</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">P&L-level advisor on talent strategy, skills architecture, org design</div>
+          </div>
+        </div>
+        <div style="background:#FEF3C7;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:11px;color:#78350F">
+          <strong>IC skills to prioritise now:</strong> AI output critical thinking, hiring manager consulting, skills-based hiring design, stakeholder influence, interview intelligence tools, human-AI collaboration
+        </div>
+      </div>
+
+      <!-- MANAGER TRACK -->
+      <div id="tam-track-mgr-content" style="display:none">
+        <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Manager career evolution track — your level</div>
+        <div style="display:flex;align-items:flex-start;gap:6px;overflow-x:auto;padding-bottom:6px">
+          <div style="min-width:130px;flex:1;background:#FEF3C7;border-radius:8px;padding:10px 12px;border:1px solid #FDE68A">
+            <div style="font-size:10px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Now (you)</div>
+            <div style="font-size:12px;font-weight:700;color:#78350F;margin-bottom:4px">TA Manager</div>
+            <div style="font-size:10px;color:#92400E;line-height:1.5">Team management, req prioritisation, AI tool adoption, stakeholder relationships</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:155px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Next</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Workforce Planning Lead</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">Skills forecasting, org design advisory, talent pipeline strategy, AI adoption lead</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:155px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Senior</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Head of TA / VP Talent</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">Business advisor on workforce strategy, AI governance in hiring, org-wide talent architecture</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:155px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Future</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Chief Talent Officer</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">C-suite seat: workforce transformation, build vs buy vs bot strategy, people architecture</div>
+          </div>
+        </div>
+        <div style="background:#FEF3C7;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:11px;color:#78350F">
+          <strong>Manager skills to prioritise now:</strong> Predictive workforce modelling, AI adoption change management, build vs buy vs bot decision frameworks, board-level talent storytelling, human-AI team design, TA ROI measurement
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div style="border:2px solid #7C3AED;border-radius:14px;padding:1.25rem;background:#F5F3FF;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="width:44px;height:44px;border-radius:50%;background:#EDE9FE;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#7C3AED;flex-shrink:0;border:2px solid #C4B5FD">TSM</div>
+        <div style="flex:1">
+          <div style="font-size:16px;font-weight:700;color:#4C1D95">Talent Sourcing Manager</div>
+          <div style="font-size:12px;color:#7C3AED">Skill combination: Sourcing + Market Intelligence + AI Agent Building</div>
+        </div>
+        <span style="background:#ECFEFF;color:#164E63;border:1px solid rgba(14,116,144,.35);padding:3px 12px;border-radius:99px;font-size:11px;font-weight:700">Rare combination</span>
+      </div>
+
+      <!-- SUPERPOWERS -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px">
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #DDD6FE">
+          <div style="font-size:13px;font-weight:600;color:#4C1D95;margin-bottom:3px">Domain depth</div>
+          <div style="font-size:11px;color:#6D28D9;line-height:1.5">You understand recruiting deeply — AI you build solves real problems, not theoretical ones</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #A5F3FC">
+          <div style="font-size:13px;font-weight:600;color:#164E63;margin-bottom:3px">Market intelligence</div>
+          <div style="font-size:11px;color:#0E7490;line-height:1.5">You read talent markets — supply, demand, comp, competitor moves — before the business asks</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #BBF7D0">
+          <div style="font-size:13px;font-weight:600;color:#166534;margin-bottom:3px">AI builder</div>
+          <div style="font-size:11px;color:#166534;line-height:1.5">You build agents & automation tools — not just use them. The rarest skill in TA right now</div>
+        </div>
+        <div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid #FED7AA">
+          <div style="font-size:13px;font-weight:600;color:#92400E;margin-bottom:3px">Translator</div>
+          <div style="font-size:11px;color:#92400E;line-height:1.5">Bridge between TA practitioners and engineers — a premium position few people occupy</div>
+        </div>
+      </div>
+
+      <!-- TRACK TOGGLE -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <button id="track-ic" onclick="setTrack('ic')" style="padding:7px 18px;border-radius:99px;border:1.5px solid #7C3AED;background:#7C3AED;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">IC Track — Sourcer / Recruiter</button>
+        <button id="track-mgr" onclick="setTrack('mgr')" style="padding:7px 18px;border-radius:99px;border:1.5px solid #E2E8F0;background:transparent;color:#64748B;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">Manager Track — Your Level</button>
+      </div>
+
+      <!-- IC TRACK -->
+      <div id="track-ic-content">
+        <div style="font-size:11px;font-weight:700;color:#7C3AED;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">IC Career evolution track — Sourcer path</div>
+        <div style="display:flex;align-items:flex-start;gap:6px;overflow-x:auto;padding-bottom:6px">
+          <div style="min-width:130px;flex:1;background:#F1F5F9;border-radius:8px;padding:10px 12px">
+            <div style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Start</div>
+            <div style="font-size:12px;font-weight:700;color:#0F172A;margin-bottom:4px">Talent Sourcer</div>
+            <div style="font-size:10px;color:#64748B;line-height:1.5">Boolean, LinkedIn, pipeline building, candidate outreach</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:150px;flex:1;background:#EDE9FE;border-radius:8px;padding:10px 12px;border:1px solid #C4B5FD">
+            <div style="font-size:10px;font-weight:700;color:#7C3AED;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Evolving now</div>
+            <div style="font-size:12px;font-weight:700;color:#4C1D95;margin-bottom:4px">Sourcer + Market Intel</div>
+            <div style="font-size:10px;color:#6D28D9;line-height:1.5">Talent mapping, comp benchmarking, skills supply analysis, competitor intelligence</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:150px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Next</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Talent Intelligence Analyst</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">Strategic market analysis, workforce planning inputs, AI-assisted research</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:150px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Future</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">TI Lead / TA AI Architect</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">Talent intelligence strategy, AI system design, TA transformation lead</div>
+          </div>
+        </div>
+        <div style="background:#F5F3FF;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:11px;color:#4C1D95">
+          <strong>IC skills to prioritise now:</strong> AI-assisted research (Lightcast, Revelio), prompt engineering for sourcing, LLM-powered market synthesis, workforce planning inputs, labour market data storytelling
+        </div>
+      </div>
+
+      <!-- MANAGER TRACK -->
+      <div id="track-mgr-content" style="display:none">
+        <div style="font-size:11px;font-weight:700;color:#0E7490;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Manager career evolution track — your level</div>
+        <div style="display:flex;align-items:flex-start;gap:6px;overflow-x:auto;padding-bottom:6px">
+          <div style="min-width:130px;flex:1;background:#F1F5F9;border-radius:8px;padding:10px 12px">
+            <div style="font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Now (you)</div>
+            <div style="font-size:12px;font-weight:700;color:#0F172A;margin-bottom:4px">Talent Sourcing Manager</div>
+            <div style="font-size:10px;color:#64748B;line-height:1.5">Managing sourcing teams + building market intel + AI agent development</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:155px;flex:1;background:#ECFEFF;border-radius:8px;padding:10px 12px;border:1px solid #A5F3FC">
+            <div style="font-size:10px;font-weight:700;color:#0E7490;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Next</div>
+            <div style="font-size:12px;font-weight:700;color:#164E63;margin-bottom:4px">TA AI Architect / TI Lead</div>
+            <div style="font-size:10px;color:#0E7490;line-height:1.5">AI system design for TA, workforce intelligence strategy, TA function transformation</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:155px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Senior</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">Head of Talent Intelligence & AI</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">Executive advisor on talent strategy, AI governance, org-wide workforce planning</div>
+          </div>
+          <div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>
+          <div style="min-width:155px;flex:1;background:#DCFCE7;border-radius:8px;padding:10px 12px;border:1px solid #86EFAC">
+            <div style="font-size:10px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">Future</div>
+            <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:4px">VP / Chief Talent Officer</div>
+            <div style="font-size:10px;color:#166534;line-height:1.5">C-suite advisor on workforce transformation, AI strategy, people architecture</div>
+          </div>
+        </div>
+        <div style="background:#ECFEFF;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:11px;color:#164E63">
+          <strong>Manager skills to prioritise now:</strong> AI adoption change management, workforce planning & forecasting, board-level talent storytelling, human-AI team design, TA transformation leadership, AI governance frameworks
+        </div>
+      </div>
+    </div>
+
+    <!-- ROLE EVOLUTION CARDS -->
+    <div style="font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">Role evolution — click any card to expand</div>
+    <div id="evo-role-cards"></div>
+
+    <!-- NEW ROLES -->
+    <div style="font-size:12px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;margin-top:4px">New roles in TA that didn't exist 3 years ago</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:20px" id="new-role-cards"></div>
+
+    <div style="background:#FEF3C7;border:1px solid #FDE68A;border-radius:12px;padding:12px 16px;font-size:12px;color:#92400E">
+      <strong>Sources:</strong> Veris Insights 2025, Horizontal Talent 2026, Korn Ferry TA Trends 2026, Gartner Oct 2025, Deloitte TA Tech Trends 2025, PeopleScout 2026, Stanford AI Index 2026.
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <span>Sources: Goldman Sachs Apr 2026 · Stanford AI Index Apr 2026 · Brookings Feb 2026 · SHRM 2026 · Robert Half Apr 2026 · WEF 2025 · McKinsey 2025 · PwC 2025 · Gartner 2025 · IMF 2024</span>
+    <span>Last updated: April 17, 2026</span>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const BU_DATA = [
+  { id:"finance", name:"Finance", icon:"₿", high:46, medium:30, low:24,
+    source:"Goldman Sachs / McKinsey: 46% admin & office tasks automatable; Bloomberg: Wall Street could cut 200,000 roles over 3–5 yrs",
+    update26:"DBS (Singapore's largest bank) cutting ~4,000 roles as AI handles back-office tasks. Bloomberg Intelligence: Wall Street ~200,000 role reduction over 3–5 yrs.",
+    skills:[
+      {skill:"Data entry & reconciliation",ai:"RPA + LLMs",risk:"high",timeline:"Now"},
+      {skill:"Invoice processing & matching",ai:"AI OCR / automation",risk:"high",timeline:"Now"},
+      {skill:"Expense reporting",ai:"Agentic AI",risk:"high",timeline:"Now"},
+      {skill:"Regulatory report generation",ai:"AI reporting tools",risk:"high",timeline:"Now"},
+      {skill:"Standard audit preparation",ai:"LLMs + audit AI",risk:"high",timeline:"Now"},
+      {skill:"Basic financial modelling",ai:"Predictive analytics AI",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Compliance monitoring",ai:"AI compliance tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Complex M&A advisory",ai:"Augmentation only",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["AI financial oversight","Strategic advisory","Stakeholder relationship management"]},
+  { id:"customer-service", name:"Customer Service", icon:"◎", high:41, medium:35, low:24,
+    source:"Goldman Sachs / McKinsey: 41% automatable; SSRN: 80% automation risk for CS reps by 2025–26",
+    update26:"Stanford AI Index 2026: customer service employment declining alongside software dev. AI productivity up 14% in customer service (McKinsey cited by Stanford).",
+    skills:[
+      {skill:"FAQ & first-line ticket triage",ai:"LLM chatbots",risk:"high",timeline:"Now"},
+      {skill:"Order tracking queries",ai:"Agentic AI",risk:"high",timeline:"Now"},
+      {skill:"Email drafting & templating",ai:"Generative AI",risk:"high",timeline:"Now"},
+      {skill:"Sentiment tagging",ai:"NLP/AI classifiers",risk:"high",timeline:"Now"},
+      {skill:"Basic CRM data entry",ai:"AI CRM assistants",risk:"high",timeline:"Now"},
+      {skill:"Escalation routing",ai:"AI workflow tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Complex complaint resolution",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["Empathy & de-escalation","AI chatbot oversight","Complex problem-solving"]},
+  { id:"hr", name:"HR", icon:"▲", high:35, medium:38, low:27,
+    source:"McKinsey: admin hiring tasks declining; BCG: 70% of AI experimentation in HR; SHRM: AI use in HR tasks climbed to 43% in 2026",
+    update26:"SHRM 2026: AI adoption across HR tasks hit 43%, up from 26% in 2024 — shift from pilots to real workflows. IBM: 40% of global workforce needs new skills within 3 years.",
+    skills:[
+      {skill:"CV screening & shortlisting",ai:"AI recruiting tools (Eightfold, Beamery)",risk:"high",timeline:"Now"},
+      {skill:"Job description writing",ai:"LLMs / LinkedIn Hiring Assistant",risk:"high",timeline:"Now"},
+      {skill:"Interview scheduling",ai:"GoodTime, Paradox, AI schedulers",risk:"high",timeline:"Now"},
+      {skill:"Onboarding FAQ chatbots",ai:"HR chatbots",risk:"high",timeline:"Now"},
+      {skill:"Performance review drafting",ai:"LLMs + analytics",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Engagement survey analysis",ai:"NLP tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Culture & change leadership",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["AI ethics in hiring","Employee relations","Organisational design"]},
+  { id:"ta", name:"Talent Acquisition (Tech)", icon:"⬡", high:38, medium:42, low:20, featured:true,
+    source:"Gartner 2026: AI impacts nearly every recruiter task; 87% Fortune 500 using AI in TA; Deloitte 2025",
+    update26:"Gartner Oct 2025: 'AI has the potential to impact nearly every part of the recruiter role.' SHRM 2026: AI use in HR/TA hit 43%. Stanford AI Index 2026: entry-level tech hiring at top 15 firms fell 25% 2023–2024, continuing into 2026.",
+    skills:[
+      {skill:"Resume screening & parsing",ai:"Eightfold AI, Beamery, LLMs",risk:"high",timeline:"Now"},
+      {skill:"Boolean string building",ai:"AI sourcing tools",risk:"high",timeline:"Now"},
+      {skill:"Interview scheduling & coordination",ai:"GoodTime, Paradox, AI schedulers",risk:"high",timeline:"Now"},
+      {skill:"Job description writing",ai:"Generative AI (LinkedIn Hiring Assistant)",risk:"high",timeline:"Now"},
+      {skill:"Candidate outreach templating",ai:"AI personalised messaging",risk:"high",timeline:"Now"},
+      {skill:"ATS data entry & admin",ai:"Agentic AI workflows",risk:"high",timeline:"Now"},
+      {skill:"Initial screening calls (volume roles)",ai:"AI voice/chat agents (Paradox, HireVue)",risk:"high",timeline:"Now"},
+      {skill:"Talent pipeline reporting",ai:"AI analytics dashboards",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Compensation benchmarking",ai:"AI comp tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Passive candidate sourcing (entry-level)",ai:"AI sourcing agents",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Employer brand content creation",ai:"Generative AI",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Technical assessment co-ordination",ai:"AI assessment platforms",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Senior & executive search",ai:"Human-led with AI assist",risk:"low",timeline:"5+ yrs"},
+      {skill:"Candidate relationship & trust-building",ai:"Irreplaceable human skill",risk:"low",timeline:"5+ yrs"},
+      {skill:"Hiring manager consulting & influence",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+      {skill:"Cultural fit & values assessment",ai:"Human judgment required",risk:"low",timeline:"5+ yrs"},
+      {skill:"Offer negotiation & closing",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["AI tool orchestration","Talent strategy consulting","Technical literacy (LLMs, agents, dev workflows)","DEI & AI bias auditing","Candidate experience design"]},
+  { id:"legal", name:"Legal", icon:"◈", high:33, medium:37, low:30,
+    source:"Goldman Sachs: automating legal & compliance ops; Harvey AI adoption; SSRN: paralegals face 80% automation risk by 2026",
+    update26:"SSRN 2026: paralegals facing 80% automation risk; legal researchers 65% risk by 2027. Goldman Sachs automating own legal and compliance operations since 2025.",
+    skills:[
+      {skill:"Standard contract review",ai:"Harvey, legal AI",risk:"high",timeline:"Now"},
+      {skill:"NDA & template drafting",ai:"LLMs",risk:"high",timeline:"Now"},
+      {skill:"Case law research & citation",ai:"LLM + legal databases",risk:"high",timeline:"Now"},
+      {skill:"Due diligence checklists",ai:"LLM + legal DBs",risk:"high",timeline:"Now"},
+      {skill:"Paralegal research tasks",ai:"Harvey / legal AI",risk:"high",timeline:"Now"},
+      {skill:"Regulatory compliance monitoring",ai:"AI compliance tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Complex litigation strategy",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["AI-generated contract oversight","Legal strategy","Client counsel"]},
+  { id:"marketing", name:"Marketing", icon:"◐", high:30, medium:40, low:30,
+    source:"McKinsey: content & research tasks automating; PwC: 4× productivity in AI-exposed industries",
+    update26:"DesignRush 2026: digital marketing content writer jobs projected -50% by 2030. Reporter/writer positions expected to shrink 30% over the coming decade.",
+    skills:[
+      {skill:"Copywriting & ad variations",ai:"Generative AI",risk:"high",timeline:"Now"},
+      {skill:"SEO content creation",ai:"AI writing tools",risk:"high",timeline:"Now"},
+      {skill:"Email campaign drafting",ai:"LLMs",risk:"high",timeline:"Now"},
+      {skill:"Social media scheduling",ai:"AI marketing platforms",risk:"high",timeline:"Now"},
+      {skill:"Market research synthesis",ai:"LLM research agents",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Creative direction & brand vision",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["Creative direction","Brand strategy","AI content governance"]},
+  { id:"operations", name:"Operations", icon:"⬢", high:28, medium:42, low:30,
+    source:"McKinsey: data entry & supply chain tasks declining; 57% of work hours automatable now",
+    update26:"Stanford AI Index 2026: a third of organisations expect AI to reduce workforce particularly in service operations and supply chain.",
+    skills:[
+      {skill:"Manual data entry",ai:"RPA + AI",risk:"high",timeline:"Now"},
+      {skill:"Supply chain reporting",ai:"AI reporting tools",risk:"high",timeline:"Now"},
+      {skill:"Process documentation & SOPs",ai:"LLMs",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Demand forecasting (standard)",ai:"AI forecasting",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Complex vendor negotiations",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["Process redesign","AI system oversight","Strategic ops planning"]},
+  { id:"it", name:"IT / Engineering", icon:"⬟", high:25, medium:38, low:37,
+    source:"IEEE: US programmer employment fell 27.5% 2023–2025; SE listings up 30% in 2026 for AI-integrated roles",
+    update26:"Stanford AI Index 2026: employment for US software devs aged 22–25 fell ~20% since 2024. AI productivity gains +26% in software dev. Agentic AI skill demand up 280%. SE listings up 30% in 2026 — but for AI-integrated roles only.",
+    skills:[
+      {skill:"Boilerplate code generation",ai:"GitHub Copilot, Claude, Cursor",risk:"high",timeline:"Now"},
+      {skill:"Unit test writing",ai:"AI coding tools",risk:"high",timeline:"Now"},
+      {skill:"Code documentation",ai:"LLMs",risk:"high",timeline:"Now"},
+      {skill:"Basic bug fixing",ai:"AI coding assistants",risk:"high",timeline:"Now"},
+      {skill:"Standard QA testing",ai:"AI test tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Vulnerability scanning",ai:"AI security tools",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"AI system architecture",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+      {skill:"Novel algorithm & agent design",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["AI-integrated development","LLM/agent engineering","AI code review & governance"]},
+  { id:"sales", name:"Sales", icon:"◆", high:22, medium:45, low:33,
+    source:"McKinsey: CRM & outreach tasks automating; Goldman Sachs 2025: 2.5% immediate displacement rate",
+    update26:"Goldman Sachs April 2026: AI augmentation adding ~9,000 new jobs/month while substitution erases ~25,000 — sales and CRM admin among the most affected categories.",
+    skills:[
+      {skill:"CRM data entry & updates",ai:"AI CRM assistants",risk:"high",timeline:"Now"},
+      {skill:"Meeting summaries & notes",ai:"LLMs (Gong, Otter AI)",risk:"high",timeline:"Now"},
+      {skill:"Outreach email drafting",ai:"Generative AI",risk:"high",timeline:"Now"},
+      {skill:"Lead scoring",ai:"Predictive sales AI",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Proposal templating",ai:"LLMs",risk:"medium",timeline:"2–5 yrs"},
+      {skill:"Complex enterprise negotiation",ai:"Human-led",risk:"low",timeline:"5+ yrs"},
+    ],reskill:["Strategic account management","AI tool fluency","Consultative selling"]},
+];
+
+const REFS = [
+  {org:"Goldman Sachs",year:"April 2026",title:"AI Erasing 16,000 US Jobs Per Month",finding:"AI substitution wipes ~25,000 jobs/month; AI augmentation creates back ~9,000. Net: 16,000/month. Gen Z entry-level workers bearing the brunt. Tech unemployment for 20–30yr-olds in AI-exposed roles up ~3pp since start of 2025.",url:"https://www.goldmansachs.com/insights/articles/how-will-ai-affect-the-global-workforce",isNew:true,color:"#0E7490"},
+  {org:"Stanford HAI",year:"April 13, 2026",title:"AI Index Report 2026",finding:"Employment among US software developers aged 22–25 fell ~20% since 2024. A third of organisations expect AI to reduce their workforce. Agentic AI skill demand up 280%. AI productivity: +14% customer service, +26% software dev.",url:"https://hai.stanford.edu/ai-index/2026-ai-index-report",isNew:true,color:"#0E7490"},
+  {org:"Lightcast / Stanford",year:"2026",title:"Stanford AI Index 2026 — Labor Market Chapter",finding:"AI skills now in 2.5% of all US job postings (up 55% YoY). Agentic AI cluster: ~90,000 US job postings. Singapore leads globally at 4.7% of postings requiring AI skills.",url:"https://lightcast.io/resources/research/stanford-ai-index-2026",isNew:true,color:"#0E7490"},
+  {org:"Brookings",year:"February 2026",title:"Measuring US Workers' Capacity to Adapt to AI-Driven Job Displacement",finding:"6.1 million US workers face both high AI exposure AND low adaptive capacity. Concentrated in clerical/admin roles. ~86% are women. Geographically in smaller metros and university towns.",url:"https://www.brookings.edu/articles/measuring-us-workers-capacity-to-adapt-to-ai-driven-job-displacement/",isNew:true,color:"#0E7490"},
+  {org:"Robert Half",year:"April 2026",title:"AI Boomerang Trend",finding:"29% of companies that laid off workers after implementing AI have since rehired them — suggesting many organisations overestimated AI's immediate capabilities in complex roles.",url:"https://www.azfamily.com/2026/04/16/companies-rehire-workers-after-ai-layoffs-boomerang-trend/",isNew:true,color:"#0E7490"},
+  {org:"SHRM",year:"2026",title:"AI Adoption in HR Tasks",finding:"AI use across HR tasks climbed to 43% in 2026, up from 26% in 2024 — signalling the shift from pilots to real production workflows.",url:"https://www.talentmsh.com/insights/ai-in-recruitment",isNew:true,color:"#0E7490"},
+  {org:"WEF",year:"January 2025",title:"Future of Jobs Report 2025",finding:"92M jobs displaced, 170M created by 2030; 39% of skills outdated; 41% of employers plan workforce reductions in AI-exposed areas; top skills: AI & big data, networks, creative thinking.",url:"https://www.weforum.org/publications/the-future-of-jobs-report-2025/",pdf:"https://reports.weforum.org/docs/WEF_Future_of_Jobs_Report_2025.pdf",isNew:false,color:"#0F172A"},
+  {org:"McKinsey MGI",year:"Nov 2025",title:"Agents, Robots & Us (2025)",finding:"57% of US work hours automatable with today's technology — up from 30% just 2 years prior. A third of organisations expect AI to shrink workforce in service ops and software engineering.",url:"https://www.mckinsey.com/mgi/our-research/generative-ai-and-the-future-of-work-in-america",isNew:false,color:"#0F172A"},
+  {org:"PwC",year:"June 2025",title:"2025 Global AI Jobs Barometer",finding:"56% wage premium for AI skills (up from 25%). 4× productivity growth in financial services & software publishing. 100% of industries increasing AI usage.",url:"https://www.pwc.com/gx/en/services/ai/ai-jobs-barometer.html",pdf:"https://www.pwc.com/gx/en/issues/artificial-intelligence/job-barometer/2025/report.pdf",isNew:false,color:"#0F172A"},
+  {org:"Gartner",year:"Oct 2025",title:"Top TA Trends for 2026",finding:"AI has potential to impact nearly every part of the recruiter role. By 2027, 75% of hiring will include AI proficiency tests. By 2030, half of enterprises will face irreversible skill shortages.",url:"https://www.gartner.com/en/newsroom/press-releases/2025-10-07-gartner-says-ai-revolution-and-cost-pressures-are-two-forces-driving-the-top-four-trends-for-talent-acquisition-in-2026",isNew:false,color:"#0F172A"},
+  {org:"Goldman Sachs",year:"2025",title:"How AI Affects the Global Workforce",finding:"300M full-time job equivalents globally exposed; GS automating legal, compliance & trading ops internally; 6–7% baseline displacement rate.",url:"https://www.goldmansachs.com/insights/articles/how-will-ai-affect-the-global-workforce",isNew:false,color:"#0F172A"},
+  {org:"IMF",year:"2024",title:"Gen-AI: Artificial Intelligence and the Future of Work",finding:"~40% of global jobs face meaningful AI exposure; rises to ~60% in high-income economies. Methodology baseline for automatable vs augmentable role classification.",url:"https://www.imf.org/en/Publications/Staff-Discussion-Notes/Issues/2024/01/14/Gen-AI-Artificial-Intelligence-and-the-Future-of-Work-542379",isNew:false,color:"#0F172A"},,
+  {org:"BCG",year:"Apr 2026",title:"AI Will Reshape More Jobs Than It Replaces",finding:"50–55% of US jobs will be substantially reshaped by AI in next 2–3 years. 10–15% (16–25M positions) could be eliminated within 5 years. Based on 165M US jobs across 1,500 roles using Revelio Labs data.",url:"https://www.bcg.com/publications/2026/ai-will-reshape-more-jobs-than-it-replaces",isNew:true,color:"#006D5B"},
+  {org:"European Commission",year:"2026",title:"AI Workforce Transition in the EU",finding:"Up to 6.5% of the EU workforce may need to transition to entirely new occupations by 2030 due to AI. EU AI Act bans emotion recognition in hiring (Feb 2025) and classifies recruitment AI as high-risk (Aug 2026).",url:"https://veritahr.com/ai-talent-race-in-2026-rethinking-recruitment-in-europe/",isNew:true,color:"#003399"},
+  {org:"Second Talent",year:"Jan 2026",title:"Global AI Talent Shortage Statistics 2026",finding:"1.6M open AI positions globally vs only 518K qualified candidates — a 3.2:1 demand/supply gap. APAC faces worst shortage at 1:3.6. North America commands highest AI salaries averaging $285K.",url:"https://www.secondtalent.com/resources/global-ai-talent-shortage-statistics/",isNew:true,color:"#7C3AED"},
+  {org:"IBM",year:"2026",title:"IBM Institute for Business Value — AI & Workforce",finding:"AI will require 40% of the global workforce to acquire new skills within 3 years. 94% of CEOs and CHROs identify AI as their top in-demand skill, yet only 35% feel they have prepared employees effectively.",url:"https://www.ibm.com/thought-leadership/institute-business-value/",isNew:true,color:"#0f62fe"},
+  {org:"IMF",year:"Feb 2025",title:"AI and the Philippine Labor Market: Mapping Occupational Exposure and Complementarity",finding:"~36% of Philippine workers highly exposed to AI. 14% face actual displacement risk (low complementarity). BPO sector has highest proportion of at-risk jobs. Women face double the GenAI exposure vs men. In NCR/Metro Manila, 2 in 5 jobs exposed.",url:"https://www.imf.org/en/publications/wp/issues/2025/02/21/artificial-intelligence-and-the-philippine-labor-market-mapping-occupational-exposure-and-562171",isNew:false,color:"#0F172A"},
+  {org:"ILO Philippines",year:"Feb 2026",title:"Generative AI and Jobs in the Philippines",finding:"Only 3.6% of Philippine jobs in highest GenAI displacement category. Most impact = job transformation, not replacement. Young women in service/sales most vulnerable. BPO workers highly exposed but only 3% of total workforce.",url:"https://www.ilo.org/publications/generative-ai-and-jobs-philippines-labour-market-exposure-and-policy",isNew:true,color:"#0E7490"},
+  {org:"IBPAP",year:"2026",title:"Philippine IT-BPM Industry Roadmap 2026",finding:"IT-BPM sector = 8% of Philippine GDP. $42B revenue target for 2026. 1.97M workers. IBPAP investing $25M/year in upskilling. BPO 2.0: shifting from voice/admin to AI-augmented cognitive services. Philippine AI market hitting $1.025B in 2026.",url:"https://nearshoreamericas.com/philippines-bets-25-million-to-shield-bpo-jobs-from-ai-disruption/",isNew:true,color:"#166534"}
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let expandedBU = null;
+let filterRisk = 'all';
+let showOnly26 = false;
+const sortedBUs = [...BU_DATA].sort((a,b)=>b.high-a.high);
+
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+function badge(risk){
+  return `<span class="badge badge-${risk}">${risk.charAt(0).toUpperCase()+risk.slice(1)}</span>`;
+}
+
+function riskBar(high,medium,low){
+  return `<div class="bar-bg"><div class="bar-seg" style="width:${high}%;background:#EF4444"></div><div class="bar-seg" style="width:${medium}%;background:#F59E0B"></div><div class="bar-seg" style="width:${low}%;background:#22C55E"></div></div>`;
+}
+
+function riskLabel(h){
+  if(h>=38) return `<span class="risk-label" style="color:#991B1B">High exposure</span>`;
+  if(h>=28) return `<span class="risk-label" style="color:#92400E">Medium exposure</span>`;
+  return `<span class="risk-label" style="color:#166534">Lower exposure</span>`;
+}
+
+// ── RENDER RISK BARS ──────────────────────────────────────────────────────────
+function renderRiskBars(){
+  document.getElementById('risk-bars').innerHTML = sortedBUs.map(bu=>`
+    <div class="bu-row">
+      <span class="bu-name${bu.featured?' featured':''}">${bu.featured?'★ ':''}${bu.name}</span>
+      ${riskBar(bu.high,bu.medium,bu.low)}
+      <span class="bar-pct">${bu.high}%</span>
+    </div>`).join('');
+}
+
+// ── RENDER BU CARDS ───────────────────────────────────────────────────────────
+function renderBUCards(){
+  document.getElementById('bu-cards').innerHTML = sortedBUs.map(bu=>`
+    <div class="bu-card${bu.featured?' featured-card':''}${expandedBU===bu.id?' active':''}" onclick="toggleExpand('${bu.id}')">
+      <div class="bu-card-header">
+        <span class="bu-card-name${bu.featured?' featured':''}">${bu.name}</span>
+        <span style="font-size:16px">${bu.icon}</span>
+      </div>
+      <div style="margin-bottom:4px">${riskBar(bu.high,bu.medium,bu.low)}</div>
+      <div class="bu-card-footer">
+        ${riskLabel(bu.high)}
+        ${bu.update26?'<span class="badge-2026">2026</span>':''}
+      </div>
+    </div>`).join('');
+}
+
+// ── TOGGLE EXPAND ─────────────────────────────────────────────────────────────
+function toggleExpand(id){
+  expandedBU = expandedBU===id ? null : id;
+  renderBUCards();
+  renderExpandedPanel();
+}
+
+function renderExpandedPanel(){
+  const panel = document.getElementById('expanded-panel');
+  if(!expandedBU){ panel.classList.add('hidden'); return; }
+  const bu = BU_DATA.find(b=>b.id===expandedBU);
+  panel.classList.remove('hidden');
+  panel.innerHTML = `
+    <div class="expanded-header">
+      <h3>${bu.name} — Skills breakdown</h3>
+      <button class="close-btn" onclick="toggleExpand('${bu.id}')">×</button>
+    </div>
+    <p class="source-note">${bu.source}</p>
+    ${bu.update26?`<div class="update-26"><strong>2026 update:</strong> ${bu.update26}</div>`:''}
+    <div style="overflow-x:auto">
+      <table class="skill-table">
+        <thead><tr><th>Skill / Task</th><th>AI replacement</th><th>Risk</th><th>Timeline</th></tr></thead>
+        <tbody>${bu.skills.map(s=>`<tr><td style="font-weight:500">${s.skill}</td><td class="ai-col">${s.ai}</td><td>${badge(s.risk)}</td><td class="timeline-col">${s.timeline}</td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div class="reskill-row">
+      <span class="reskill-label">Reskill toward:</span>
+      ${bu.reskill.map(r=>`<span class="reskill-chip">${r}</span>`).join('')}
+    </div>`;
+}
+
+// ── RENDER MAPPING TABLE ──────────────────────────────────────────────────────
+function renderMapping(){
+  const all = BU_DATA.flatMap(b=>b.skills.map(s=>({...s,bu:b.name,featured:b.featured})));
+  const filtered = filterRisk==='all' ? all : all.filter(s=>s.risk===filterRisk);
+
+  document.getElementById('filter-row').innerHTML =
+    [['all','All skills'],['high','High risk'],['medium','Medium risk'],['low','Resilient']].map(([k,l])=>`
+      <button class="filter-btn${filterRisk===k?' active':''}" onclick="setFilter('${k}')">${l} (${k==='all'?all.length:all.filter(s=>s.risk===k).length})</button>`).join('');
+
+  document.getElementById('mapping-tbody').innerHTML = filtered.map(s=>`
+    <tr class="${s.featured?'ta-row':''}">
+      <td class="bu-col${s.featured?' featured':''}">${s.bu}${s.featured?' ★':''}</td>
+      <td style="font-weight:500">${s.skill}</td>
+      <td class="ai-col-m">${s.ai}</td>
+      <td>${badge(s.risk)}</td>
+      <td class="tl-col">${s.timeline}</td>
+    </tr>`).join('');
+}
+
+function setFilter(k){ filterRisk=k; renderMapping(); }
+
+// ── RENDER REFS ───────────────────────────────────────────────────────────────
+function renderRefs(){
+  const list = showOnly26 ? REFS.filter(r=>r.isNew) : REFS;
+  document.getElementById('refs-list').innerHTML = list.map(r=>`
+    <div class="ref-card${r.isNew?' new26':''}">
+      <div class="ref-card-inner">
+        <div style="flex:1">
+          <div class="ref-meta">
+            <span class="ref-org" style="background:${r.color}">${r.org}</span>
+            <span class="ref-year">${r.year}</span>
+            ${r.isNew?'<span class="badge-2026">2026</span>':''}
+            <span class="ref-title">${r.title}</span>
+          </div>
+          <p class="ref-finding">${r.finding}</p>
+        </div>
+        <div class="ref-links">
+          <a href="${r.url}" target="_blank" class="ref-link">View ↗</a>
+          ${r.pdf?`<a href="${r.pdf}" target="_blank" class="ref-link-pdf">PDF ↗</a>`:''}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleRefs(only26, btn){
+  showOnly26 = only26;
+  document.querySelectorAll('.ref-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRefs();
+}
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+function switchTab(name, btn){
+  ['overview','ta','evolution','mapping','refs'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('hidden', t!==name);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='mapping') renderMapping();
+  if(name==='refs') renderRefs();
+  if(name==='evolution') renderEvolution();
+}
+
+// ── TA ROLE EVOLUTION DATA ────────────────────────────────────────────────────
+const EVO_ROLES = [
+  {
+    initials:'TS', fromRole:'Sourcer', toRole:'Talent Intelligence Analyst',
+    sub:'Evolving: from pipeline filler to strategic market analyst',
+    badge:'Fastest evolving', badgeBg:'#ECFEFF', badgeText:'#164E63', badgeBorder:'rgba(14,116,144,.3)',
+    cardBorder:'#0E7490', cardBg:'#ECFEFF',
+    superpowers:[
+      {icon:'&#9670;',color:'#0E7490',border:'#A5F3FC',title:'Market reading',desc:'Understands talent supply & demand before anyone else in the org'},
+      {icon:'&#9670;',color:'#7C3AED',border:'#DDD6FE',title:'AI research engine',desc:'Uses LLMs to synthesise market data in minutes vs weeks'},
+      {icon:'&#9670;',color:'#166534',border:'#BBF7D0',title:'Strategic asset',desc:'Answers "where is the talent?" before the business even asks'},
+      {icon:'&#9670;',color:'#92400E',border:'#FED7AA',title:'Hard to replace',desc:'Contextual judgement + AI tools = output no agent replicates alone'}
+    ],
+    track:[
+      {label:'Foundation',bg:'#F1F5F9',border:'',labelColor:'#64748B',titleColor:'#0F172A',descColor:'#64748B',title:'Talent Sourcer',desc:'Boolean, LinkedIn, pipeline building, candidate outreach'},
+      {label:'Now',bg:'#ECFEFF',border:'1px solid #A5F3FC',labelColor:'#0E7490',titleColor:'#164E63',descColor:'#0E7490',title:'Sourcer + Market Intel',desc:'Talent mapping, comp benchmarking, skills supply analysis'},
+      {label:'Next',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'Talent Intelligence Analyst',desc:'Labour market strategy, workforce planning inputs, competitive intelligence'},
+      {label:'Future',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'Head of Talent Intelligence',desc:'Business advisor, AI-powered TI function, org-wide workforce strategy'}
+    ],
+    automating:85, growing:90,
+    dying:['Boolean string building','Resume database trawling','InMail blasting','Manual pipeline filling','Copy-paste candidate tracking'],
+    growingSkills:['Market mapping & supply/demand','Competitor talent intelligence','Skills gap forecasting','Salary & comp benchmarking','Passive talent landscape reports'],
+    newskills:['AI-assisted market research (Lightcast, Revelio)','Prompt engineering for research','LLM-powered landscape synthesis','Workforce planning data inputs','Labour market storytelling'],
+    source:'Workday 2025 + Veris Insights 2025: AI is automating Boolean search, resume scanning and manual outreach; sourcers who evolve into talent intelligence analysts — providing market context AI cannot replicate — are the most resilient in the function',
+    sourceUrl:'https://blog.workday.com/en-us/talent-sourcing-done-right-age-ai.html'
+  },
+  {
+    initials:'RR', fromRole:'Recruiter', toRole:'Talent Advisor / Strategic Partner',
+    sub:'Evolving: from req-filler to trusted business advisor',
+    badge:'Elevated role', badgeBg:'#F1F5F9', badgeText:'#444441', badgeBorder:'#D3D1C7',
+    cardBorder:'#7C3AED', cardBg:'#F5F3FF',
+    superpowers:[
+      {icon:'&#9670;',color:'#7C3AED',border:'#DDD6FE',title:'Relationship capital',desc:'Builds trust with candidates and HMs that no AI can replicate'},
+      {icon:'&#9670;',color:'#0E7490',border:'#A5F3FC',title:'Strategic seat',desc:'Partners with execs on workforce planning, not just filling roles'},
+      {icon:'&#9670;',color:'#166534',border:'#BBF7D0',title:'Judgment layer',desc:'Navigates ambiguity, culture, and nuance — AI biggest gap'},
+      {icon:'&#9670;',color:'#92400E',border:'#FED7AA',title:'10x capacity',desc:'AI handles admin — recruiter focuses entirely on high-value work'}
+    ],
+    track:[
+      {label:'Foundation',bg:'#F1F5F9',border:'',labelColor:'#64748B',titleColor:'#0F172A',descColor:'#64748B',title:'Recruiter',desc:'Full-cycle hiring, screening, scheduling, offer management'},
+      {label:'Now',bg:'#EDE9FE',border:'1px solid #C4B5FD',labelColor:'#7C3AED',titleColor:'#4C1D95',descColor:'#6D28D9',title:'AI-augmented Recruiter',desc:'AI handles admin; recruiter owns relationships & HM consulting'},
+      {label:'Next',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'Talent Advisor',desc:'Strategic partner to leadership, workforce planning, executive hiring'},
+      {label:'Future',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'Strategic Talent Partner',desc:'P&L-level advisor on talent strategy, skills, and org design'}
+    ],
+    automating:70, growing:85,
+    dying:['First-line screening calls','CV shortlisting','Interview scheduling','ATS data entry','Standard outreach emails'],
+    growingSkills:['Hiring manager consulting','Workforce planning advisory','Candidate relationship & trust','Offer strategy & negotiation','Employer brand storytelling'],
+    newskills:['AI output interpretation & critical thinking','Interview intelligence tools','Skills-based hiring design','Stakeholder influence at exec level','Human-AI team coordination'],
+    source:'Horizontal Talent 2026: New recruiter is part talent advisor, part strategist, part relationship architect',
+    sourceUrl:'https://www.horizontaltalent.com/blog/2025/12/17/2026-talent-acquisition-predictions-lean-into-an-AI-human-partnership'
+  },
+  {
+    initials:'RO', fromRole:'Rec Ops', toRole:'TA Systems Architect / AI Governance',
+    sub:'Evolving: from process admin to AI infrastructure owner',
+    badge:'Fastest growing', badgeBg:'#FEE2E2', badgeText:'#991B1B', badgeBorder:'#FECACA',
+    cardBorder:'#EF4444', cardBg:'#FEF2F2',
+    superpowers:[
+      {icon:'&#9670;',color:'#991B1B',border:'#FECACA',title:'Systems thinker',desc:'Designs AI workflows that scale across the entire TA function'},
+      {icon:'&#9670;',color:'#7C3AED',border:'#DDD6FE',title:'Governance owner',desc:'Ensures AI is fair, auditable, and compliant — critical in 2026'},
+      {icon:'&#9670;',color:'#0E7490',border:'#A5F3FC',title:'Tech translator',desc:'Speaks both TA and engineering — owns the stack no one else understands'},
+      {icon:'&#9670;',color:'#166534',border:'#BBF7D0',title:'ROI proof point',desc:'Measures and proves value of AI investment to leadership'}
+    ],
+    track:[
+      {label:'Foundation',bg:'#F1F5F9',border:'',labelColor:'#64748B',titleColor:'#0F172A',descColor:'#64748B',title:'Rec Ops Coordinator',desc:'ATS admin, reporting, process documentation, compliance tracking'},
+      {label:'Now',bg:'#FEE2E2',border:'1px solid #FECACA',labelColor:'#991B1B',titleColor:'#7F1D1D',descColor:'#991B1B',title:'TA Ops + AI Tooling',desc:'AI tool evaluation, workflow automation, vendor management, data quality'},
+      {label:'Next',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'TA Systems Architect',desc:'Agentic AI design, data architecture, governance frameworks, KPI design'},
+      {label:'Future',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166634',descColor:'#166534',title:'Head of TA Technology & AI',desc:'Enterprise AI strategy for talent, compliance, bias auditing, org-wide ops'}
+    ],
+    automating:60, growing:95,
+    dying:['Manual ATS admin','Spreadsheet reporting','Ad-hoc tool management','Basic process documentation','Manual compliance tracking'],
+    growingSkills:['AI tool stack integration & governance','Bias auditing & compliance (EU AI Act)','TA data architecture','Agentic AI workflow design','Vendor evaluation & ROI'],
+    newskills:['AI agent monitoring & guardrails','Prompt ops & evaluation frameworks','HRIS/ATS API integration','KPI design for human-AI teams','EU AI Act / NYC LL144 compliance'],
+    source:'Gartner 2026: Hands-on monitoring of agentic AI is a must — defining outcomes and watching for deviations',
+    sourceUrl:'https://www.gartner.com/en/newsroom/press-releases/2025-10-07-gartner-says-ai-revolution-and-cost-pressures-are-two-forces-driving-the-top-four-trends-for-talent-acquisition-in-2026'
+  },
+  {
+    initials:'TM', fromRole:'TA Manager', toRole:'Workforce Planning Lead',
+    sub:'Evolving: from hiring manager to strategic workforce architect',
+    badge:'Strategic shift', badgeBg:'#FEF3C7', badgeText:'#92400E', badgeBorder:'#FDE68A',
+    cardBorder:'#F59E0B', cardBg:'#FFFBEB',
+    superpowers:[
+      {icon:'&#9670;',color:'#92400E',border:'#FED7AA',title:'Anticipates needs',desc:'Forecasts workforce gaps before they become business problems'},
+      {icon:'&#9670;',color:'#7C3AED',border:'#DDD6FE',title:'Build vs bot decisions',desc:'Advises on whether to hire humans, reskill, or deploy AI agents'},
+      {icon:'&#9670;',color:'#0E7490',border:'#A5F3FC',title:'Board-level voice',desc:'Represents talent strategy at exec level — not just headcount'},
+      {icon:'&#9670;',color:'#166534',border:'#BBF7D0',title:'Transformation leader',desc:'Guides org through AI adoption in talent — the hardest change mgmt job'}
+    ],
+    track:[
+      {label:'Foundation',bg:'#F1F5F9',border:'',labelColor:'#64748B',titleColor:'#0F172A',descColor:'#64748B',title:'TA Manager',desc:'Team management, req prioritisation, stakeholder relationships, reporting'},
+      {label:'Now',bg:'#FEF3C7',border:'1px solid #FDE68A',labelColor:'#92400E',titleColor:'#78350F',descColor:'#92400E',title:'TA Manager + AI Adoption Lead',desc:'Driving AI tool adoption, redesigning workflows, managing human-AI teams'},
+      {label:'Next',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'Workforce Planning Lead',desc:'Skills forecasting, org design advisory, talent pipeline strategy'},
+      {label:'Future',bg:'#DCFCE7',border:'1px solid #86EFAC',labelColor:'#166534',titleColor:'#166534',descColor:'#166534',title:'Chief Talent Officer',desc:'C-suite advisor on workforce transformation, AI governance, people strategy'}
+    ],
+    automating:50, growing:80,
+    dying:['Req management & admin','Fill metrics reporting','Vendor relationship admin','Process policing','Headcount spreadsheet tracking'],
+    growingSkills:['Strategic workforce planning','Skills gap forecasting','Executive advisory on talent','Build vs buy vs bot decisions','TA transformation leadership'],
+    newskills:['Predictive workforce modelling','AI adoption change management','Board-level talent storytelling','Human-AI team design','Skills taxonomy & internal mobility'],
+    source:'Korn Ferry 2026: TA leader opportunity — be to the CHRO what the CHRO is to the CEO: a strategic advisor on workforce transformation',
+    sourceUrl:'https://www.kornferry.com/insights/featured-topics/talent-recruitment/talent-acquisition-trends'
+  }
+];
+
+const NEW_ROLES = [
+  {
+    title:'TA AI Architect',
+    sub:'Designs and builds AI agents, automations and workflows for the TA function — the person who makes the AI stack work end-to-end.',
+    skills:['LLM APIs','Agent frameworks','Prompt engineering','Workflow automation','ATS integration'],
+    salary:'$130k–$200k', note:'Emerging fast', color:'#7C3AED', bg:'#F5F3FF', border:'#C4B5FD',
+    url:'https://eightfold.ai/blog/most-important-job-2026/', urlLabel:'Eightfold: Most important job of 2026 ↗',
+    jobs:[
+      {co:'Fireworks AI (Greenhouse)', title:'Senior GTM Recruiter — AI-native TA + workflow automation', url:'https://job-boards.greenhouse.io/fireworksai/jobs/4204968009'},
+      {co:'xAI (Greenhouse)', title:'Technical Recruiter — AI-augmented sourcing & TA ops', url:'https://job-boards.greenhouse.io/xai/jobs/5059413007'},
+      {co:'ZipRecruiter', title:'Browse: Talent Acquisition AI / TA Ops roles (live)', url:'https://www.ziprecruiter.com/Jobs/Talent-Intelligence'}
+    ]
+  },
+  {
+    title:'Talent Intelligence Lead',
+    sub:'Uses labour market data, AI tools and competitive analysis to answer: where is the talent, what does it cost, how is it moving?',
+    skills:['Lightcast / Revelio','Market mapping','Workforce analytics','Competitive intel','LLM research'],
+    salary:'$110k–$160k', note:'Growing fast', color:'#0E7490', bg:'#ECFEFF', border:'#A5F3FC',
+    url:'https://talentintelligencecollective.substack.com/p/talent-intelligence-collective-digest-f7d', urlLabel:'Talent Intelligence Collective — live job board ↗',
+    jobs:[
+      {co:'Google DeepMind (Greenhouse)', title:'Analytics & Insights Partner, People & Talent Intelligence — London', url:'https://job-boards.greenhouse.io/deepmind/jobs/7626259'},
+      {co:'Netflix (LinkedIn)', title:'Talent Intelligence Partner — New York', url:'https://www.linkedin.com/jobs/view/talent-intelligence-partner-at-netflix-4093403750'},
+      {co:'Groq (LinkedIn)', title:'Talent Intelligence Researcher — United States', url:'https://www.linkedin.com/jobs/view/talent-intelligence-researcher-at-groq-4309020934'}
+    ]
+  },
+  {
+    title:'AI Sourcing Specialist',
+    sub:'Operates and optimises AI sourcing agents — tuning, evaluating, and improving automated sourcing pipelines.',
+    skills:['Eightfold AI','Beamery','AI evaluation','Pipeline analytics','Skills inference'],
+    salary:'$90k–$130k', note:'New category', color:'#166534', bg:'#DCFCE7', border:'#86EFAC',
+    url:'https://recruiterflow.com/blog/best-ai-sourcing-tools/', urlLabel:'Recruiterflow: 23 Best AI Sourcing Tools 2026 ↗',
+    jobs:[
+      {co:'Imagen Technologies (Greenhouse)', title:'Senior Technical Recruiter — AI sourcing + market intelligence', url:'https://job-boards.greenhouse.io/imagentechnologies/jobs/8437489002'},
+      {co:'Northrop Grumman (LinkedIn)', title:'Talent Intelligence Analyst 2/3', url:'https://www.linkedin.com/jobs/view/talent-intelligence-analyst-2-3-r10224581-at-northrop-grumman-4391543895'},
+      {co:'ZipRecruiter', title:'Browse: 18,500+ Talent Intelligence / AI Sourcing roles (live)', url:'https://www.ziprecruiter.com/Jobs/Talent-Intelligence'}
+    ]
+  },
+  {
+    title:'TA AI Governance Manager',
+    sub:'Owns responsible AI in hiring — bias auditing, regulatory compliance (EU AI Act, NYC LL144), candidate transparency, and ethical guardrails.',
+    skills:['Bias auditing','EU AI Act','Compliance','Model risk','Candidate trust'],
+    salary:'$120k–$170k', note:'Regulation-driven', color:'#92400E', bg:'#FEF3C7', border:'#FDE68A',
+    url:'https://www.crazehq.com/blog/ai-recruitment-trends', urlLabel:'AI Recruiting Trends 2026 — EU AI Act & compliance ↗',
+    jobs:[
+      {co:'LinkedIn Jobs', title:'14,000+ AI Governance roles globally (live search)', url:'https://www.linkedin.com/jobs/ai-governance-jobs-worldwide'},
+      {co:'LinkedIn Jobs', title:'195+ Director of AI Governance roles in US (live search)', url:'https://www.linkedin.com/jobs/director-of-ai-governance-jobs'},
+      {co:'Randstad Enterprise (LinkedIn)', title:'Client Partner — Talent Intelligence, EMEA', url:'https://www.linkedin.com/jobs/view/client-partner-talent-intelligence-at-randstad-enterprise-4309952011'}
+    ]
+  },
+  {
+    title:'Candidate Experience Designer',
+    sub:'Designs the end-to-end candidate journey in an AI-first TA model — ensuring automation enhances rather than kills the human connection.',
+    skills:['CX design','Conversational AI','Journey mapping','Brand storytelling','Feedback loops'],
+    salary:'$85k–$120k', note:'Emerging', color:'#993556', bg:'#FBEAF0', border:'#F4C0D1',
+    url:'https://www.i4cp.com/productivity-blog/4-priorities-for-talent-acquisition-leaders-in-2026', urlLabel:'i4cp: 4 TA Priorities 2026 ↗',
+    jobs:[
+      {co:'LinkedIn Jobs', title:'Search: Candidate Experience + TA roles (live)', url:'https://www.linkedin.com/jobs/search/?keywords=candidate+experience+talent+acquisition'},
+      {co:'Fireworks AI (Greenhouse)', title:'Senior GTM Recruiter — candidate experience + AI-first TA', url:'https://job-boards.greenhouse.io/fireworksai/jobs/4204968009'},
+      {co:'ZipRecruiter', title:'Browse: Candidate Experience Designer roles (live)', url:'https://www.ziprecruiter.com/Jobs/Candidate-Experience'}
+    ]
+  }
+];
+
+let activeEvoExpand = {};
+
+// ── REGION DATA ──────────────────────────────────────────────────────────────
+const REGION_DATA = {
+  us: {
+    label: 'Global / US',
+    sourcetag: 'Goldman Sachs · Stanford HAI · McKinsey · Brookings',
+    stats: [
+      {val:'16,000', lbl:'US jobs lost per month (net)', src:'Goldman Sachs, April 2026', bg:'#FEE2E2', color:'#991B1B', tag:'NEW 2026', tagnew:true, url:'https://fortune.com/2026/04/06/ai-tech-displacement-effect-gen-z-16000-jobs-per-month/'},
+      {val:'20%', lbl:'Drop in US software dev employment, ages 22–25', src:'Stanford AI Index 2026', bg:'#ECFEFF', color:'#164E63', tag:'NEW 2026', tagnew:true, url:'https://hai.stanford.edu/ai-index/2026-ai-index-report'},
+      {val:'280%', lbl:"Surge in 'Agentic AI' skill mentions in job postings", src:'Lightcast / Stanford AI Index 2026', bg:'#FEF3C7', color:'#92400E', tag:'NEW 2026', tagnew:true, url:'https://lightcast.io/resources/research/stanford-ai-index-2026'},
+      {val:'39%', lbl:'of existing skills outdated by 2030', src:'WEF Future of Jobs 2025', bg:'#EFF6FF', color:'#1E40AF', tag:'2025', tagnew:false, url:'https://www.weforum.org/publications/the-future-of-jobs-report-2025/'},
+      {val:'50–55%', lbl:'of US jobs will be reshaped by AI in next 2–3 years — not replaced, but fundamentally changed', src:'BCG Henderson Institute, April 2026 — 165M US jobs analysed', bg:'#F1F5F9', color:'#0F172A', tag:'NEW 2026', tagnew:true, url:'https://www.bcg.com/publications/2026/ai-will-reshape-more-jobs-than-it-replaces'},
+      {val:'56%', lbl:'wage premium for workers with AI skills', src:'PwC AI Jobs Barometer 2025', bg:'#DCFCE7', color:'#166534', tag:'2025', tagnew:false, url:'https://www.pwc.com/gx/en/services/ai/ai-jobs-barometer.html'}
+    ],
+    alert: {
+      title: '2026 US data integrated',
+      body: '<strong>BCG (April 2026):</strong> 50–55% of US jobs will be reshaped by AI in 2–3 years; 10–15% (16–25M positions) could be eliminated within 5 years. Key finding: AI reshapes more than it replaces. &nbsp;·&nbsp; <strong>Goldman Sachs (April 2026):</strong> 16,000 US jobs/month lost net — Gen Z bearing the brunt. &nbsp;·&nbsp; <strong>Stanford AI Index (April 2026):</strong> US software dev employment (ages 22–25) down ~20%; agentic AI skill demand up 280%. &nbsp;·&nbsp; <strong>SHRM 2026:</strong> AI use in HR/TA workflows hit 43% (up from 26% in 2024). &nbsp;·&nbsp; <strong>Robert Half (April 2026):</strong> 29% of companies that laid off workers post-AI have since rehired ("AI boomerang").'
+    }
+  },
+  emea: {
+    label: 'EMEA',
+    sourcetag: 'PwC EMEA Barometer · WEF · EU AI Act · Mercer',
+    stats: [
+      {val:'80%', lbl:'of EMEA organisations have adopted AI in at least one function', src:'PwC AI Jobs Barometer 2025 — 15 EMEA countries', bg:'#ECFEFF', color:'#164E63', tag:'2025', tagnew:false, url:'https://www.pwc.com/gx/en/services/workforce/ai-work-future-workforce-emea.html'},
+      {val:'273%', lbl:'Growth in AI-exposed job postings in France since 2019', src:'PwC EMEA AI Jobs Barometer 2025', bg:'#EFF6FF', color:'#1E40AF', tag:'2025', tagnew:false, url:'https://www.pwc.com/gx/en/services/workforce/ai-work-future-workforce-emea.html'},
+      {val:'6.5%', lbl:'of EU workforce may need to transition to entirely new occupations by 2030 due to AI', src:'European Commission analysis, via Verita HR 2026', bg:'#FEF3C7', color:'#92400E', tag:'2026', tagnew:true, url:'https://veritahr.com/ai-talent-race-in-2026-rethinking-recruitment-in-europe/'},
+      {val:'81%', lbl:'of European hiring managers now prioritise AI-related capabilities across ALL roles — not just tech', src:'Verita HR / European hiring data 2026', bg:'#FEE2E2', color:'#991B1B', tag:'2026', tagnew:true, url:'https://veritahr.com/ai-talent-race-in-2026-rethinking-recruitment-in-europe/'},
+      {val:'Aug 2026', lbl:'EU AI Act enforcement start — recruitment AI classified high-risk', src:'EU AI Act, enforced August 2026', bg:'#F5F3FF', color:'#4C1D95', tag:'REGULATORY', tagnew:true, url:'https://www.crazehq.com/blog/ai-recruitment-trends'},
+      {val:'56%', lbl:'wage premium for AI skills — global figure, applies across EMEA markets', src:'PwC AI Jobs Barometer 2025', bg:'#DCFCE7', color:'#166534', tag:'2025', tagnew:false, url:'https://www.pwc.com/gx/en/services/ai/ai-jobs-barometer.html'}
+    ],
+    alert: {
+      title: 'EMEA context — key differences from US',
+      body: '<strong>EU AI Act (Feb 2025 / Aug 2026):</strong> Emotion recognition in hiring banned since February 2025. Recruitment AI classified "high-risk" from August 2026 — companies must audit, document, and provide human oversight. &nbsp;·&nbsp; <strong>European Commission 2026:</strong> Up to 6.5% of EU workforce may need to transition to entirely new occupations by 2030. &nbsp;·&nbsp; <strong>PwC EMEA (2025):</strong> AI-exposed role growth varies — Poland +235%, France +273%, but UK & Denmark seeing displacement in some automatable roles. &nbsp;·&nbsp; <strong>EU Pay Transparency Directive 2026:</strong> All EU employers must now include salary ranges in job postings — reshaping TA workflows across the region. &nbsp;·&nbsp; <strong>Korn Ferry Global Survey (Oct 2025):</strong> 26% of respondents were EMEA-based — 52% plan to add AI agents to TA teams in 2026.'
+    }
+  },
+  apac: {
+    label: 'APAC',
+    sourcetag: 'BCG · ManpowerGroup · LinkedIn APAC · Lightcast',
+    stats: [
+      {val:'53%', lbl:'of APAC business leaders already use AI agents — highest globally', src:'BCG AI at Work Survey, Oct 2025 — 9 APAC markets', bg:'#ECFEFF', color:'#164E63', tag:'2025', tagnew:false, url:'https://www.bcg.com/press/30october2025-asia-pacific-leads-ai-adoption'},
+      {val:'53%', lbl:'of APAC workers fear job loss from AI vs 36% global average', src:'BCG AI at Work Survey, Oct 2025', bg:'#FEE2E2', color:'#991B1B', tag:'2025', tagnew:false, url:'https://www.bcg.com/press/30october2025-asia-pacific-leads-ai-adoption'},
+      {val:'4.7%', lbl:'of all Singapore job postings mention AI — #1 globally', src:'Lightcast / Stanford AI Index 2026', bg:'#FEF3C7', color:'#92400E', tag:'NEW 2026', tagnew:true, url:'https://lightcast.io/resources/research/stanford-ai-index-2026'},
+      {val:'71%', lbl:'of APAC employers struggle to fill roles — AI skills hardest to find', src:'ManpowerGroup Global Talent Shortage Survey, Feb 2026', bg:'#F5F3FF', color:'#4C1D95', tag:'NEW 2026', tagnew:true, url:'https://www.prnewswire.com/apac/news-releases/ai-skills-emerge-as-apmes-hardest-to-find-competencies-manpowergroups-2026-global-talent-shortage-survey-302696564.html'},
+      {val:'81%', lbl:'of recruiters in India say AI has changed their hiring process', src:'LinkedIn APAC Survey, Feb 2026 — 19,113 respondents', bg:'#DCFCE7', color:'#166534', tag:'NEW 2026', tagnew:true, url:'https://itbrief.asia/story/asia-pacific-recruiters-lean-on-ai-as-job-race-intensifies'},
+      {val:'1.6M', lbl:'open AI positions globally vs only 518K qualified candidates — APAC faces worst shortage at 1:3.6 demand/supply ratio', src:'Second Talent Global AI Talent Shortage Report, Jan 2026', bg:'#EFF6FF', color:'#1E40AF', tag:'NEW 2026', tagnew:true, url:'https://www.secondtalent.com/resources/global-ai-talent-shortage-statistics/'},
+      {val:'🇵🇭 36%', lbl:'of Philippine workers highly exposed to AI — BPO sector most at risk; 14% face actual displacement. AI market hitting $1B in 2026', src:'IMF Working Paper Feb 2025 + Philippine AI Report 2025 + IBPAP 2026', bg:'#FEF3C7', color:'#92400E', tag:'PH SPOTLIGHT', tagnew:true, url:'https://www.imf.org/en/publications/wp/issues/2025/02/21/artificial-intelligence-and-the-philippine-labor-market-mapping-occupational-exposure-and-562171'}
+    ],
+    alert: {
+      title: 'APAC context — fastest adopting region globally',
+      body: '<strong>BCG Oct 2025:</strong> APAC leads globally — 53% of business leaders deploying AI agents vs 36% globally. India 92% adoption, Japan 51% — huge within-region variance. &nbsp;·&nbsp; <strong>🇵🇭 Philippines spotlight:</strong> IMF (Feb 2025) finds 36% of workers highly exposed to AI, 14% at actual displacement risk. BPO sector = most vulnerable — 83% concentrated in contact centres. Yet 92% of Philippine orgs have deployed AI and IBPAP is investing $25M/year in upskilling. AI market hitting $1.025B in 2026. &nbsp;·&nbsp; <strong>ILO Philippines (Feb 2026):</strong> Only 3.6% in highest displacement risk category — most impact is job transformation, not replacement. Women face double the GenAI exposure vs men. &nbsp;·&nbsp; <strong>LinkedIn APAC (Feb 2026):</strong> 79% Singapore, 81% India, 75% Australia recruiters say AI has changed their hiring process. &nbsp;·&nbsp; <strong>ManpowerGroup (Feb 2026):</strong> AI skills are now the #1 hardest-to-find competency across APME.'
+    }
+  }
+};
+
+let activeRegion = 'us';
+
+function setRegion(r) {
+  activeRegion = r;
+  const d = REGION_DATA[r];
+
+  // Update label
+  document.getElementById('active-region-label').textContent = 'Viewing: ' + d.label;
+  document.getElementById('region-source-tag').textContent = d.sourcetag;
+
+  // Update button styles
+  ['us','emea','apac'].forEach(id => {
+    const btn = document.getElementById('rgn-' + id);
+    if(id === r) {
+      btn.style.background = '#0F172A'; btn.style.color = '#fff'; btn.style.borderColor = '#0F172A'; btn.style.fontWeight = '700';
+    } else {
+      btn.style.background = '#fff'; btn.style.color = '#64748B'; btn.style.borderColor = '#E2E8F0'; btn.style.fontWeight = '600';
+    }
+  });
+
+  // Update stats grid
+  document.getElementById('stats-grid-container').innerHTML = d.stats.map(s => `
+    <a class="stat-card" href="${s.url}" target="_blank" style="background:${s.bg};border-color:rgba(0,0,0,.08)">
+      <span class="tag ${s.tagnew?'tag-new':'tag-old'}" style="${s.tagnew?'background:#ECFEFF;color:#164E63;border-color:rgba(14,116,144,.4)':''}">${s.tag}</span>
+      <div class="val" style="color:${s.color}">${s.val}</div>
+      <div class="lbl" style="color:${s.color}">${s.lbl}</div>
+      <div class="src" style="color:${s.color}">${s.src}</div>
+    </a>`).join('');
+
+  // Update alert banner
+  const alert = document.getElementById('alert-banner-content');
+  alert.querySelector('.title').textContent = d.alert.title;
+  alert.querySelector('.body').innerHTML = d.alert.body;
+}
+
+let activeTAMTrack = 'ic';
+function setTAMTrack(track){
+  activeTAMTrack = track;
+  document.getElementById('tam-track-ic-content').style.display = track==='ic'?'block':'none';
+  document.getElementById('tam-track-mgr-content').style.display = track==='mgr'?'block':'none';
+  const icBtn = document.getElementById('tam-track-ic');
+  const mgrBtn = document.getElementById('tam-track-mgr');
+  if(track==='ic'){
+    icBtn.style.background='#F59E0B'; icBtn.style.color='#fff'; icBtn.style.borderColor='#F59E0B';
+    mgrBtn.style.background='transparent'; mgrBtn.style.color='#64748B'; mgrBtn.style.borderColor='#E2E8F0';
+  } else {
+    mgrBtn.style.background='#92400E'; mgrBtn.style.color='#fff'; mgrBtn.style.borderColor='#92400E';
+    icBtn.style.background='transparent'; icBtn.style.color='#64748B'; icBtn.style.borderColor='#E2E8F0';
+  }
+}
+
+let activeTrack = 'ic';
+function setTrack(track){
+  activeTrack = track;
+  document.getElementById('track-ic-content').style.display = track==='ic'?'block':'none';
+  document.getElementById('track-mgr-content').style.display = track==='mgr'?'block':'none';
+  const icBtn = document.getElementById('track-ic');
+  const mgrBtn = document.getElementById('track-mgr');
+  if(track==='ic'){
+    icBtn.style.background='#7C3AED'; icBtn.style.color='#fff'; icBtn.style.borderColor='#7C3AED';
+    mgrBtn.style.background='transparent'; mgrBtn.style.color='#64748B'; mgrBtn.style.borderColor='#E2E8F0';
+  } else {
+    mgrBtn.style.background='#0E7490'; mgrBtn.style.color='#fff'; mgrBtn.style.borderColor='#0E7490';
+    icBtn.style.background='transparent'; icBtn.style.color='#64748B'; icBtn.style.borderColor='#E2E8F0';
+  }
+}
+
+function renderEvolution(){
+  document.getElementById('evo-role-cards').innerHTML = EVO_ROLES.map((r,i)=>`
+    <div style="border:2px solid ${r.cardBorder};border-radius:14px;padding:1.25rem;background:${r.cardBg};margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="width:40px;height:40px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:${r.cardBorder};flex-shrink:0;border:1px solid ${r.cardBorder}55">${r.initials}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:600;color:#0F172A">${r.fromRole} <span style="color:${r.cardBorder};font-size:13px">&#8594; ${r.toRole}</span></div>
+          <div style="font-size:12px;color:#64748B">${r.sub}</div>
+        </div>
+        <span style="background:${r.badgeBg};color:${r.badgeText};border:1px solid ${r.badgeBorder};padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap">${r.badge}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px">
+        ${r.superpowers.map(s=>`<div style="background:#fff;border-radius:8px;padding:10px 12px;border:1px solid ${s.border}"><div style="font-size:14px;margin-bottom:4px;color:${s.color}">${s.icon}</div><div style="font-size:12px;font-weight:600;color:${s.color};margin-bottom:2px">${s.title}</div><div style="font-size:11px;color:${s.color};opacity:.85;line-height:1.5">${s.desc}</div></div>`).join('')}
+      </div>
+      <div style="font-size:11px;font-weight:600;color:${r.cardBorder};margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Career evolution track</div>
+      <div style="display:flex;align-items:flex-start;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px">
+        ${r.track.map((t,ti)=>`${ti>0?'<div style="align-self:center;color:#94A3B8;font-size:18px;flex-shrink:0">&#8594;</div>':''}<div style="min-width:140px;flex:1;background:${t.bg};border-radius:8px;padding:10px 12px;${t.border?'border:'+t.border:''}"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;color:${t.labelColor}">${t.label}</div><div style="font-size:12px;font-weight:600;margin-bottom:4px;color:${t.titleColor}">${t.title}</div><div style="font-size:10px;line-height:1.5;color:${t.descColor}">${t.desc}</div></div>`).join('')}
+      </div>
+      <div onclick="toggleEvoExpand(${i})" style="font-size:12px;color:${r.cardBorder};cursor:pointer;font-weight:600;margin-bottom:${activeEvoExpand[i]?'10px':'0'}">
+        ${activeEvoExpand[i]?'&#9650; Hide skills detail':'&#9660; Show skills being automated vs growing'}
+      </div>
+      <div style="font-size:10px;color:#94A3B8;margin-top:6px">Source: <a href="${r.sourceUrl}" target="_blank" style="color:#1E40AF;text-decoration:none">${r.source} &#8599;</a></div>
+      ${activeEvoExpand[i]?`<div style="background:#fff;border-radius:8px;padding:12px 14px;border:0.5px solid #E2E8F0"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><div><div style="font-size:10px;font-weight:600;color:#991B1B;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Being automated away</div>${r.dying.map(s=>`<span style="display:inline-block;font-size:10px;background:#FCEBEB;color:#791F1F;border:0.5px solid #F09595;border-radius:99px;padding:2px 7px;margin:2px 2px 2px 0">${s}</span>`).join('')}</div><div><div style="font-size:10px;font-weight:600;color:#166534;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Growing in value</div>${r.growingSkills.map(s=>`<span style="display:inline-block;font-size:10px;background:#DCFCE7;color:#166534;border:0.5px solid #86EFAC;border-radius:99px;padding:2px 7px;margin:2px 2px 2px 0">${s}</span>`).join('')}</div></div><div><div style="font-size:10px;font-weight:600;color:#4C1D95;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">New skills to build now</div>${r.newskills.map(s=>`<span style="display:inline-block;font-size:10px;background:#F5F3FF;color:#4C1D95;border:0.5px solid #C4B5FD;border-radius:99px;padding:2px 7px;margin:2px 2px 2px 0">${s}</span>`).join('')}</div><div style="font-size:10px;color:#94A3B8;font-style:italic;margin-top:8px"><a href="${r.sourceUrl}" target="_blank" style="color:#1E40AF;text-decoration:none;font-style:italic">${r.source} &#8599;</a></div></div>`:''}
+    </div>`).join('');
+
+  document.getElementById('new-role-cards').innerHTML = NEW_ROLES.map(r=>`
+    <div style="background:#fff;border:0.5px solid #E2E8F0;border-radius:14px;padding:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:600;color:#0F172A">${r.title}</div>
+        <span style="background:${r.bg};color:${r.color};border:1px solid ${r.border};padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;margin-left:8px;white-space:nowrap">${r.note}</span>
+      </div>
+      <div style="font-size:11px;color:#64748B;margin-bottom:8px;line-height:1.5">${r.sub}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">${r.skills.map(s=>`<span style="font-size:10px;padding:2px 7px;border-radius:99px;background:#F8FAFC;color:#64748B;border:0.5px solid #E2E8F0">${s}</span>`).join('')}</div>
+      <div style="font-size:13px;font-weight:600;color:${r.color}">${r.salary}</div>
+      <div style="font-size:10px;color:#94A3B8;margin-bottom:8px">${r.note} comp range</div>
+      <a href="${r.url}" target="_blank" style="font-size:10px;color:#1E40AF;text-decoration:none;display:block;margin-bottom:8px">${r.urlLabel} &#8599;</a>
+      <div style="font-size:10px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Real job postings:</div>
+      ${r.jobs.map(j=>`<a href="${j.url}" target="_blank" style="display:block;font-size:11px;color:#1E40AF;text-decoration:none;padding:4px 0;border-top:0.5px solid #F1F5F9">${j.co} — ${j.title} &#8599;</a>`).join('')}
+    </div>`).join('');
+}
+
+function toggleEvoExpand(i){
+  activeEvoExpand[i] = !activeEvoExpand[i];
+  renderEvolution();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderRiskBars();
+renderBUCards();
+</script>
+</body>
+</html>
